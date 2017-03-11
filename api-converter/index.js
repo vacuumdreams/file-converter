@@ -10,25 +10,24 @@ const PROCESSTIME = {
 
 const STEPS = 100
 
+const process = (time, res) => {
+  let track = 0
+  const progress = setInterval(() => {
+    res.write(`${track++}`)
+    console.log(track)
+    if (track === STEPS) {
+      clearInterval(progress)
+      res.end()
+    }
+  }, time / STEPS)
+}
+
 const routeSpec = {
   "/to-html": {
-    post: (req, res) => {
-      let track = 0
-      const progress = setInterval(() => {
-        res.write("" + track++)
-        console.log(track)
-        if (track === STEPS) {
-          clearInterval(progress)
-          res.end()
-        }
-      }, PROCESSTIME.HTML / STEPS)
-    },
+    post: (req, res) => process(PROCESSTIME.HTML, res),
   },
   "/to-pdf": {
-    post: (req, res) => {
-      console.log("TO PDF")
-      res.status(200).send()
-    },
+    post: (req, res) => process(PROCESSTIME.PDF, res),
   },
 }
 
