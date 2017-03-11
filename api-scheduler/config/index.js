@@ -1,11 +1,9 @@
-const path = require("path")
-
 const host = process.env.API_SCHEDULER_HOST  || "http://localhost"
-const port = process.env.API_SCHEDULER_PORT || "8010"
+const port = process.env.API_SCHEDULER_PORT || "8020"
 
 module.exports = {
   server: {
-    name: "api-converter",
+    name: "api-scheduler",
     url: `${host}:${port}`,
     cors: "*",
   },

@@ -22,11 +22,14 @@
     "body-parser": "^1.17.1",
     "cors": "^2.8.1",
     "express": "^4.15.2",
-    "ramda": "^0.23.0"
+    "node-fetch": "^1.6.3",
+    "ramda": "^0.23.0",
+    "socket.io": "^1.7.3"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",
     "eslint": "^3.17.1",
-    "eslint-plugin-babel": "^4.1.1"
+    "eslint-plugin-babel": "^4.1.1",
+    "nodemon": "^1.11.0"
   }
 }
