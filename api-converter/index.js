@@ -14,7 +14,6 @@ const process = (time, res) => {
   let track = 0
   const progress = setInterval(() => {
     res.write(`${track++}`)
-    console.log(track)
     if (track === STEPS) {
       clearInterval(progress)
       res.end()
