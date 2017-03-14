@@ -13,7 +13,8 @@
   "keywords": [
     "node",
     "express",
-    "angular"
+    "angular",
+    "socket.io"
   ],
   "author": "Botond Fekete",
   "license": "MIT",
@@ -23,14 +24,14 @@
     "cors": "^2.8.1",
     "express": "^4.15.2",
     "node-fetch": "^1.6.3",
-    "ramda": "^0.23.0",
-    "socket.io": "^1.7.3",
-    "whatwg-fetch": "^2.0.3"
+    "node-uuid": "^1.4.7",
+    "socket.io": "^1.7.3"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",
     "eslint": "^3.17.1",
     "eslint-plugin-babel": "^4.1.1",
+    "gulp": "^3.9.1",
     "nodemon": "^1.11.0"
   }
 }
