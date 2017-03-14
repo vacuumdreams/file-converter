@@ -5,13 +5,13 @@ const PROCESSTIME = {
 
 const STEPS = 100
 
-module.exports = (type, res) => {
+module.exports = (type, writeStream) => {
   let track = 0
   const progress = setInterval(() => {
-    res.write(`${track++}`)
+    writeStream.write(`${track++}`)
     if (track === STEPS) {
       clearInterval(progress)
-      res.end()
+      writeStream.end()
     }
   }, PROCESSTIME[type] / STEPS)
 }
