@@ -1,1 +1,3 @@
-module.exports.fileprocess = require("./fileprocess")
+module.exports = ({fileprocess}) => ({
+  fileprocess: require("./fileprocess")(fileprocess),
+})

@@ -7,4 +7,13 @@ module.exports = {
     url: `${host}:${port}`,
     cors: "*",
   },
+  services: {
+    fileprocess: {
+      STEPS: 100,
+      TIME: {
+        HTML: 10000,
+        PDF: 10,
+      },
+    },
+  },
 }

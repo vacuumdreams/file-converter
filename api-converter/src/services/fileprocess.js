@@ -1,17 +1,10 @@
-const PROCESSTIME = {
-  HTML: 10000,
-  PDF: 10,
-}
-
-const STEPS = 100
-
-module.exports = (type, writeStream) => {
+module.exports = config => (type, writeStream) => {
   let track = 0
   const progress = setInterval(() => {
     writeStream.write(`${track++}`)
-    if (track === STEPS) {
+    if (track === config.STEPS) {
       clearInterval(progress)
       writeStream.end()
     }
-  }, PROCESSTIME[type] / STEPS)
+  }, config.TIME[type] / config.STEPS)
 }
