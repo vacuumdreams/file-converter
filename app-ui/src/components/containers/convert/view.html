@@ -1,0 +1,45 @@
+<main ng-app="app.convert">
+
+  <header>
+    <h1>Conversions</h1>
+
+    <form action="{action}" method="{method}">
+      <input type="hidden" name="id" value="{id}">
+      <input type="hidden" name="client" value="{client}">
+      <input type="hidden" name="service" value="{service}">
+      <input type="hidden" name="task" value="{task}">
+      <input type="hidden" name="method" value={method}>
+      <input type="hidden" name="data" value="{data}">
+      <button type="submit">{text}</button>
+    </form>
+
+    <form action="{action}" method="{method}">
+      <input type="hidden" name="service" value="{service}">
+      <input type="hidden" name="task" value="{task}">
+      <input type="hidden" name="method" value={method}>
+      <input type="hidden" name="data" value="{data}">
+      <button type="submit">{text}</button>
+    </form>
+
+  </header>
+
+  <convert-list>
+    <div>
+      <span>Name</span>
+      <span>Created at</span>
+      <span>Type</span>
+      <span>Status</span>
+    </div>
+    
+    <ul>
+      <li>
+        <h3>{title}</h3>
+        <time datetime="{time.raw}">{time.display}</time>
+        <mark>{type}</mark>
+        <span><i class="{status.icon}"></i>{status.text}</span>
+        <progress value="{progress.value}" max="{progress.max}"></progress>
+      </li>
+    </ul>
+  </convert-list>
+
+</main>

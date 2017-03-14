@@ -1,70 +1,13 @@
 <!DOCTYPE html>
 
-<html>
-
-  <head></head>
-
+<html ng-app="app">
+  <head>
+    <link rel="stylesheet" href="styles.css">
+    <title>File convert app</title>
+  </head>
   <body>
-
-    <form id="to-html" action="http://localhost:8020/schedule" action="POST">
-      <input type="hidden" name="service" value="converter">
-      <input type="hidden" name="task" value="to-html">
-      <input type="hidden" name="method" value="post">
-      <input type="hidden" name="data" value="file://bla">
-      <button type="submit">Convert HTML</button>
-    </form>
-    
-    <script src="/Users/vanilla/Projects/convert/node_modules/socket.io-client/dist/socket.io.min.js">
-    </script>
-    <script src="/Users/vanilla/Projects/convert/node_modules/whatwg-fetch/fetch.js"></script>
-
-    <script>
-
-      var socket = io("http://localhost:8021")
-      var clientId
-
-      socket.on("id", function(data) {
-        console.log(data)
-        clientId = data
-      })
-
-      socket.on("progress", function(data) {
-        console.log(data)
-      })
-
-      console.log({
-        id: 1,
-        client: clientId,
-        service: "converter",
-        task: "to-html",
-        method: "post",
-        data: "file://blah",
-      })
-
-      fetch("http://localhost:8020/schedule", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: {
-          id: 1,
-          client: clientId,
-          service: "converter",
-          task: "to-html",
-          method: "post",
-          data: "file://blah",
-        },
-      }).then(function(res) {
-        console.log(res)
-        // return res.json()
-      // }).then(function(res) {
-      //   console.log(res)
-      }).catch(function(err) {
-        console.log(err)
-      })
-
-    </script>
-
+    <div ng-view></div>
+    <script src="bundle.js"></script>
   </body>
 </html>
 
