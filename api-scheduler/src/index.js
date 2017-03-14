@@ -1,15 +1,19 @@
-const io = require("socket.io")()
 const bodyParser = require("body-parser")
 
-const bootstrapApi = require("../../lib/api")
+const startApi = require("../../lib/api")
+
 const routes = require("./routes")
+const services = require("./services")
 
-module.exports = config => bootstrapApi(config, routes(config), api => {
-  api.use(bodyParser.json())
-
-  io.on("connection", client => {
-    client.emit("id", client.id)
-  })
-
-  io.listen(config.io.port)
+module.exports = config => startApi({
+  config,
+  routes,
+  services,
+  middlewares: [
+    bodyParser.json({type: "application/json"}),
+    (req, res, next) => {
+      console.log("HEY!")
+      next()
+    },
+  ],
 })

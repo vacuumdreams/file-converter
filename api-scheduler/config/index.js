@@ -8,10 +8,15 @@ module.exports = {
     url: `${host}:${port}`,
     cors: "*",
   },
-  io: {
-    port: ioport,
-  },
   registry: {
     converter: "http://localhost:8010",
+  },
+  services: {
+    io: {
+      port: ioport,
+    },
+    queue: {
+      max: 3,
+    },
   },
 }

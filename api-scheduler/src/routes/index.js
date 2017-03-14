@@ -1,5 +1,5 @@
 const schedule = require("./schedule")
 
-module.exports = config => ({
-  "/schedule": schedule(config),
+module.exports = (config, {io, queue}) => ({
+  "/schedule": schedule(config, io, queue),
 })
