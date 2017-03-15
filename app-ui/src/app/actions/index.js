@@ -1,4 +1,2 @@
-module.exports = {
-  "toHtml": require("./to-html"),
-  "toPdf": require("./to-pdf"),
-}
+// place to define shared services/factories on root app
+module.exports = {}

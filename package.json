@@ -20,18 +20,21 @@
   "license": "MIT",
   "dependencies": {
     "angular": "^1.6.3",
+    "angular-route": "^1.6.3",
     "body-parser": "^1.17.1",
     "cors": "^2.8.1",
     "express": "^4.15.2",
+    "gulp": "^3.9.1",
     "node-fetch": "^1.6.3",
     "node-uuid": "^1.4.7",
     "socket.io": "^1.7.3"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",
+    "browserify": "^14.1.0",
     "eslint": "^3.17.1",
     "eslint-plugin-babel": "^4.1.1",
-    "gulp": "^3.9.1",
-    "nodemon": "^1.11.0"
+    "nodemon": "^1.11.0",
+    "vinyl-source-stream": "^1.1.0"
   }
 }

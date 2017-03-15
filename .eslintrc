@@ -131,7 +131,7 @@
     "id-length": 0, // this option enforces minimum and maximum identifier lengths (variable names, property names etc.)
     "id-match": 0, // require identifiers to match the provided regular expression
     "indent": [2, 2], // specify tab or space width for your code
-    "jsx-quotes": [2, "prefer-double"], // specify whether double or single quotes should be used in JSX attributes
+    "jsx-quotes": [2, "prefer-single"], // specify whether double or single quotes should be used in JSX attributes
     "key-spacing": 2, // enforce spacing between keys and values in object literal properties
     "linebreak-style": [2, "unix"], // disallow mixed 'LF' and 'CRLF' as linebreaks
     "lines-around-comment": 2, // enforce empty lines around comments
@@ -166,7 +166,7 @@
     "operator-linebreak": 0, // enforce operators to be placed before or after line breaks
     "padded-blocks": 0, // enforce padding within blocks
     "quote-props": 0, // require quotes around object literal property names
-    "quotes": [2, "double"], // specify whether backticks, double or single quotes should be used
+    "quotes": [2, "single"], // specify whether backticks, double or single quotes should be used
     "require-jsdoc": 0, // Require JSDoc comment
     "semi": [2, "never"], // require or disallow use of semicolons instead of ASI
     "semi-spacing": 0, // enforce spacing before and after semicolons

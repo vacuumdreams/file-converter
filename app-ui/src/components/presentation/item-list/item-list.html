@@ -1,0 +1,15 @@
+<div>
+  <div ng-repeat="header in list.header">
+    <span>{{header}}</span>
+  </div>
+  
+  <ul ng-repeat="item in list.items">
+    <li>
+      <h3>{{item.title}}</h3>
+      <time datetime="{{item.time.raw}}">{{item.time.display}}</time>
+      <mark>{{item.type}}</mark>
+      <span><i class="{{item.status.icon}}"></i>{{item.status.text}}</span>
+      <progress value="{{item.progress.value}}" max="{{item.progress.max}}"></progress>
+    </li>
+  </ul>
+</div>

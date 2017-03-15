@@ -2,8 +2,13 @@ const config = require("./config")
 const express = require("express")
 const path = require("path")
 
-const bootstrapServer = require("../lib/api")
+const startServer = require("../lib/api")
 
-bootstrapServer(config, [], server => {
-  server.use(express.static(path.join(__dirname, "dist")))
+startServer({
+  config, 
+  routes: () => ([]), 
+  middlewares: () => ([
+    express.static(path.join(__dirname, "dist")),
+    express.static(path.join(__dirname, "..", "node_modules/angular")),
+  ]),
 })
