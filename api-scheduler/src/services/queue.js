@@ -1,5 +1,5 @@
-const EventEmmitter = require("events")
-const uuid = require("node-uuid")
+const EventEmmitter = require('events')
+const uuid = require('node-uuid')
 
 class Queue extends EventEmmitter {
   constructor({max}) {
@@ -8,14 +8,14 @@ class Queue extends EventEmmitter {
     this._queue = []
     this._processing = {}
 
-    this.on("add", this._add)
-    this.on("process", this._process)
+    this.on('add', this._add)
+    this.on('process', this._process)
   }
 
   _add(e) {
-    if (typeof e === "function") {
+    if (typeof e === 'function') {
       this._queue.push(e)
-      this.emit("process")
+      this.emit('process')
     }
   }
 
@@ -26,13 +26,13 @@ class Queue extends EventEmmitter {
       const item = this._queue.shift()
       self._processing[id] = item().then(() => {
         delete self._processing[id]
-        self.emit("process")
+        self.emit('process')
       })
     }
   }
 
   push(e) {
-    this.emit("add", e)
+    this.emit('add', e)
   }
 }
 

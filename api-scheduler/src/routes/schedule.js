@@ -3,14 +3,14 @@ module.exports = (config, io, queue) => ({
     const {id, client, service, task, method, data, progress} = req.body
     const url = config.registry[service]
 
-    if (!url) return res.status(400).send({ message: "Requested service does not exist" })
+    if (!url) return res.status(400).send({ message: 'Requested service does not exist' })
 
     queue(() => fetch(`${url}/${task}`, {method, body: data})
       .then(result => {
-        res.status(200).send({ message: "OK" })
+        res.status(200).send({ message: 'OK' })
         
         if (progress) {
-          result.body.on("data", data => {
+          result.body.on('data', data => {
             console.log(data.toString())
             io.to(client).emit(`progress-${id}`, data.toString())
           })
