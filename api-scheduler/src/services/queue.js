@@ -36,4 +36,7 @@ class Queue extends EventEmmitter {
   }
 }
 
-module.exports = config => new Queue(config).push
+module.exports = config => {
+  const q = new Queue(config)
+  return q.push.bind(q)
+}

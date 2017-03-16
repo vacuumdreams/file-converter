@@ -1,7 +1,8 @@
-const angular = require('angular')
-const route = require('angular-route')
+const uuid = require('node-uuid')
+const angular = require('angular') 
+require('angular-route')
 
-const ConvertController = function (ServiceConvert) {
+function ConvertController(ServiceSchedule) {
   const vm = this
 
   vm.title = 'Conversions'
@@ -23,11 +24,11 @@ const ConvertController = function (ServiceConvert) {
       task: 'to-html',
       method: 'post',
       data: {
-        path: 'file://dummy.html'
+        path: 'file://dummy.html',
       },
     },
     text: 'New HTML Conversion',
-    add: () => ServiceConvert.send(vm.html.package).then(vm.add),
+    add: () => ServiceSchedule.send(angular.merge({ id: uuid.v4() }, vm.html.package)).then(vm.add),
   }
   vm.pdf = {
     package: {
@@ -35,17 +36,25 @@ const ConvertController = function (ServiceConvert) {
       task: 'to-pdf',
       method: 'post',
       data: {
-        path: 'file://dummy.pdf'
+        path: 'file://dummy.pdf',
       },
     },
     text: 'New PDF Conversion',
-    add: () => ServiceConvert.send(vm.pdf.package).then(vm.add),
+    add: () => ServiceSchedule.send(angular.merge({ id: uuid.v4() }, vm.pdf.package)).then(vm.add),
   }
+}
+
+function SreviceSchedule($http) { 
+  return ({
+    send: pkg => $http.post('http://localhost:8020/schedule', pkg)
+      .then(res => {
+        console.log(res)
+      }),
+  })
 }
 
 angular.module('app', [
   'ngRoute',
-  // 'ngView',
   'app.convert',
 ])
 .config(['$routeProvider', $routeProvider => {
@@ -55,14 +64,12 @@ angular.module('app', [
     controllerAs: 'vm',
   })
 }])
+.config(['$httpProvider', $httpProvider => {
+  $httpProvider.defaults.headers.common['Content-type'] = 'application/json'
+}])
 
 angular.module('app.convert', [])
-.factory('ServiceConvert', $http => ({
-  send: package => $http.post('http://localhost:8020/schedule', package)
-    .then(res => {
-      console.log(res)
-    })
-}))
+.factory('ServiceSchedule', SreviceSchedule)
 .controller('ConvertController', ConvertController)
 .directive('formButton', () => ({ scope: { props: '=' }, templateUrl: 'presentation/form-button.html' }))
 .directive('itemList', () => ({ scope: { list: '=' }, templateUrl: 'presentation/item-list.html' }))

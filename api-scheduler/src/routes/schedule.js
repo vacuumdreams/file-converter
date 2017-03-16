@@ -1,3 +1,5 @@
+const fetch = require('node-fetch')
+
 module.exports = (config, io, queue) => ({
   post: (req, res) => {
     const {id, client, service, task, method, data, progress} = req.body
@@ -16,8 +18,7 @@ module.exports = (config, io, queue) => ({
           })
         }
       })
-      .catch(err => {
-        console.log(err)
+      .catch(() => {
         res.status(500).send({ message: `There was an error connecting to service '${service}'` })
       })
     )
