@@ -1,13 +1,18 @@
-<main ng-app='app.convert'><!-- <div ng-controller='ConvertController as vm'> -->
-
+<main ng-app="app.convert">
+  
   <header>
     <h1>{{vm.title}}</h1>
 
-    <form-button props='vm.html'></form-button>
-    <form-button props='vm.pdf'></form-button>
+    <form-button on-submit="vm.html.add()" on-update="vm.html.update()" disabled="vm.html.disabled" text="{{vm.html.text}}">
+    </form-button>
+    <form-button on-submit="vm.pdf.add()" on-update="vm.pdf.update()" disabled="vm.pdf.disabled" text="{{vm.pdf.text}}">
+    </form-button>
 
+<!--     <button ng-click="vm.html.add()" ng-disabled="{{vm.html.disabled}}">{{vm.html.text}}</button>
+    <button ng-click="vm.pdf.add()" ng-disabled="{{vm.pdf.disabled}}">{{vm.pdf.text}}</button>
+ -->
   </header>
 
-  <item-list list='vm.list'></item-list>
-<!-- </div> -->
+  <item-list list="vm.list"></item-list>
+
 </main>
