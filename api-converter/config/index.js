@@ -12,7 +12,7 @@ module.exports = {
       STEPS: 100,
       TIME: {
         HTML: 10000,
-        PDF: 10,
+        PDF: 100000,
       },
     },
   },

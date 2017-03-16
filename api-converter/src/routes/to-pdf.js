@@ -1,3 +1,3 @@
 module.exports = (config, fileprocess) => ({
-  post: (req, res) => fileprocess('pdf', res),
+  post: (req, res) => fileprocess('PDF', res),
 })
