@@ -1,7 +1,7 @@
-<main ng-app="app.convert">
+<main class="app" ng-app="app.convert">
   
-  <header>
-    <h1>{{vm.title}}</h1>
+  <header class="app-header">
+    <h1 class="app-title">{{vm.title}}</h1>
 
     <form-button on-submit="vm.html.add()" on-update="vm.html.update()" disabled="vm.html.disabled" text="{{vm.html.text}}">
     </form-button>

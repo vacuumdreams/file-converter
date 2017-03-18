@@ -7,6 +7,10 @@ module.exports = {
     url: `${host}:${port}`,
     cors: '*',
   },
+  registry: {
+    scheduler: 'http://localhost:8020',
+    schedulerIO: 'http://localhost:8021',
+  },
   client: {
 
   },
