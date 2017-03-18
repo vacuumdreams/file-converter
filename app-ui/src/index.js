@@ -1,11 +1,57 @@
 const uuid = require('node-uuid')
+const moment = require('moment')
+const io = require('socket.io-client')
+
 const angular = require('angular') 
 require('angular-route')
 
-function ConvertController(ServiceSchedule) {
+const events = {
+  SCHEDULE: {
+    SEND: {
+      SUCCESS: 'schedule:send:success',
+    },
+  },
+  IO: {
+    CONNECT: 'io:connect',
+  },
+}
+
+function ControllerSchedule($scope, ServiceSchedule, ServiceScheduleIO) {
   const vm = this
 
   vm.title = 'Conversions'
+
+  ServiceScheduleIO.on('id', id => {
+    console.log('client created: ' + id)
+    $scope.$broadcast(events.IO.CONNECT, id)
+  })
+
+  // setTimeout(() => console.log(vm), 3000)
+
+  $scope.$on(events.IO.CONNECT, (e, id) => {
+    console.log('ID: ' + id)
+    vm.html.update({
+      disabled: true,
+    })
+    vm.pdf.update({
+      disabled: true,
+    })
+
+    // vm.html = angular.merge(vm.html, {
+    //   client: id,
+    //   disabled: false,
+    //   package: {
+    //     progress: true,
+    //   },
+    // })
+    // vm.pdf = angular.merge(vm.pdf, {
+    //   client: id,
+    //   disabled: false,
+    //   package: {
+    //     progress: true,
+    //   },
+    // })
+  })
 
   vm.list = {
     header: [
@@ -15,52 +61,106 @@ function ConvertController(ServiceSchedule) {
       'Status',
     ],
     items: [],
-    add: item => vm.list.items.push(item),
+    add: $scope.$on(events.SCHEDULE.SEND.SUCCESS, (e, res) => {
+      console.log('ONSEND: ', res)
+      vm.list.items.push({
+        id: res.id,
+        title: `${res.type} #${vm.list.items.filter(item => item.type === res.type).length + 1}`,
+        time: {
+          raw: res.started,
+          display: moment(res.started).format('LLLL'),
+        },
+        type: res.type,
+        statusText: 'In Queue',
+        progress: {
+          value: 0,
+          max: 100,
+        },
+      })
+    }),
   }
 
   vm.html = {
     package: {
+      client: undefined,
       service: 'converter',
       task: 'to-html',
       method: 'post',
+      progress: true,
       data: {
         path: 'file://dummy.html',
       },
     },
     text: 'New HTML Conversion',
-    add: () => ServiceSchedule.send(angular.merge({ id: uuid.v4() }, vm.html.package)).then(vm.add),
+    disabled: false,
+    add: () => {
+      const id = uuid.v4()
+      ServiceSchedule.send($scope, angular.merge({ id }, vm.html.package))
+      ServiceScheduleIO.on(`start-${id}`, () => console.log('STARTED!'))
+      ServiceScheduleIO.on(`progress-${id}`, percentage => {
+        console.log(vm.list.items.find(item => item.id === id).progress.value)
+        vm.list.items.find(item => item.id === id).progress.value = parseInt(percentage)
+        console.log('PERCENTAGE: ' + percentage)
+      })
+      ServiceScheduleIO.on(`complete-${id}`, () => console.log('COMPLETED!'))
+      ServiceScheduleIO.on(`error-${id}`, error => console.log('ERROR: ', error))
+    },
+    update: obj => angular.merge(vm.html, obj),
   }
   vm.pdf = {
     package: {
+      client: undefined,
       service: 'converter',
       task: 'to-pdf',
       method: 'post',
+      progress: true,
       data: {
         path: 'file://dummy.pdf',
       },
     },
+    disabled: false,
     text: 'New PDF Conversion',
-    add: () => ServiceSchedule.send(angular.merge({ id: uuid.v4() }, vm.pdf.package)).then(vm.add),
+    add: () => {
+      const id = uuid.v4()
+      ServiceSchedule.send($scope, angular.merge({ id }, vm.pdf.package))
+      ServiceScheduleIO.on(`start-${id}`, () => console.log('STARTED!'))
+      ServiceScheduleIO.on(`progress-${id}`, percentage => {
+        console.log(vm.list.items)
+        vm.list.items.find(item => item.id === id).progress.value = percentage
+        console.log('PERCENTAGE: ' + percentage)
+      })
+      ServiceScheduleIO.on(`complete-${id}`, () => console.log('COMPLETED!'))
+      ServiceScheduleIO.on(`error-${id}`, error => console.log('ERROR: ', error))
+    },
+    update: obj => angular.merge(vm.pdf, obj),
   }
 }
 
-function SreviceSchedule($http) { 
+function ServiceSchedule($http) { 
   return ({
-    send: pkg => $http.post('http://localhost:8020/schedule', pkg)
+    send: (scope, pkg) => $http.post('http://localhost:8020/schedule', pkg)
       .then(res => {
-        console.log(res)
+        scope.$broadcast(events.SCHEDULE.SEND.SUCCESS, res.data.data)
       }),
+  })
+}
+
+function ServiceScheduleIO() {
+  const socket = io('http://localhost:8021')
+  return ({
+    emit: socket.emit.bind(socket),
+    on: socket.on.bind(socket),
   })
 }
 
 angular.module('app', [
   'ngRoute',
-  'app.convert',
+  'app.convert', // <- TODO: location check for defining the right module dependency on init
 ])
 .config(['$routeProvider', $routeProvider => {
   $routeProvider.when('/', {
     templateUrl: 'containers/convert.html',
-    controller: 'ConvertController',
+    controller: 'ControllerSchedule',
     controllerAs: 'vm',
   })
 }])
@@ -69,9 +169,33 @@ angular.module('app', [
 }])
 
 angular.module('app.convert', [])
-.factory('ServiceSchedule', SreviceSchedule)
-.controller('ConvertController', ConvertController)
-.directive('formButton', () => ({ scope: { props: '=' }, templateUrl: 'presentation/form-button.html' }))
-.directive('itemList', () => ({ scope: { list: '=' }, templateUrl: 'presentation/item-list.html' }))
+.factory('ServiceSchedule', ServiceSchedule)
+.factory('ServiceScheduleIO', ServiceScheduleIO)
+.controller('ControllerSchedule', ControllerSchedule)
+.directive('formButton', () => ({ 
+  restrict: 'E',
+  scope: {
+    onSubmit: '&',
+    onUpdate: '&',
+    disabled: '<',
+    text: '@', 
+  },
+  // bindToController: {
+
+  // },
+  // controller: ($scope) => {
+  //   $scope.$watch('disabled', newVal => {
+  //     console.log('disabled update to: ', newVal)
+  //   })
+  // },
+  // controllerAs: 'vm',
+  templateUrl: 'presentation/form-button.html',
+}))
+.directive('itemList', () => ({
+  scope: {
+    list: '<',
+  },
+  templateUrl: 'presentation/item-list.html',
+}))
 
 

@@ -1,0 +1,20 @@
+* {
+  box-sizing: border-box; 
+}
+
+body {
+  color: $color-text-dark;
+  background-color: $color-bg-main;
+}
+
+.app {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: $size-container;
+  padding: 1rem;
+
+  &-header {
+    display: flex;
+  }
+}
