@@ -167,11 +167,20 @@ angular.module('app', [
 .config(['$httpProvider', $httpProvider => {
   $httpProvider.defaults.headers.common['Content-type'] = 'application/json'
 }])
-
-angular.module('app.convert', [])
-.factory('ServiceSchedule', ServiceSchedule)
-.factory('ServiceScheduleIO', ServiceScheduleIO)
-.controller('ControllerSchedule', ControllerSchedule)
+.directive('iconSprite', () => ({
+  scope: {},
+  templateUrl: 'presentation/icon-sprite.html',
+}))
+.directive('icon', () => ({
+  scope: {
+    name: '@',
+  },
+  template: `
+    <svg viewBox="0 0 100 100" class="icon icon-{{name}}">
+      <use xlink:href="#clock"></use>
+    </svg>
+  `,
+}))
 .directive('formButton', () => ({ 
   restrict: 'E',
   scope: {
@@ -180,22 +189,17 @@ angular.module('app.convert', [])
     disabled: '<',
     text: '@', 
   },
-  // bindToController: {
-
-  // },
-  // controller: ($scope) => {
-  //   $scope.$watch('disabled', newVal => {
-  //     console.log('disabled update to: ', newVal)
-  //   })
-  // },
-  // controllerAs: 'vm',
   templateUrl: 'presentation/form-button.html',
 }))
+
+angular.module('app.convert', [])
+.factory('ServiceSchedule', ServiceSchedule)
+.factory('ServiceScheduleIO', ServiceScheduleIO)
+.controller('ControllerSchedule', ControllerSchedule)
 .directive('itemList', () => ({
+  restrict: 'E',
   scope: {
     list: '<',
   },
   templateUrl: 'presentation/item-list.html',
 }))
-
-

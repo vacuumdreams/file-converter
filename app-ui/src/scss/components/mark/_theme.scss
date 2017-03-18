@@ -1,3 +1,6 @@
-.mark {
-  
+& {
+  background-color: $mark-color-bg;
+  color: $mark-color-text;
+  padding: 0.5em 1em;
+  border-radius: 3px;
 }

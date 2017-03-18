@@ -1,10 +1,11 @@
 * {
   box-sizing: border-box; 
+  color: $color-text-dark;
 }
 
 body {
-  color: $color-text-dark;
   background-color: $color-bg-main;
+  font-size: 0.85rem;
 }
 
 .app {
@@ -16,5 +17,21 @@ body {
 
   &-header {
     display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 2em 0;
+  }
+
+  &-controls {
+    display: flex;
+    
+    & > * {
+      margin-left: 1em;
+    }
+  }
+
+  &-title {
+    font-size: 2em;
+    margin: 0;
   }
 }

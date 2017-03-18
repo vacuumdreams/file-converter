@@ -1,4 +1,8 @@
 & {
+  background-color: $button-color-bg;
   border: 1px solid $button-color-border;
   border-radius: 3px;
+  font-weight: 600;
+  padding: 0.5em;
+  width: 15em;
 }
