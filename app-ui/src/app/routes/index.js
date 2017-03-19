@@ -1,3 +1,5 @@
+const { convert } = require('../../containers')
+
 module.exports = {
-  '/': require('./convert'),
+  '/': convert,
 }
