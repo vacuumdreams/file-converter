@@ -93,6 +93,12 @@
     }
   }
 
+  &-status {
+    &-icon {
+      margin-right: 0.25em;
+    }
+  }
+
   &-progress {
     position: absolute;
     height: 0.5em;

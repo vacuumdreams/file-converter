@@ -6,12 +6,14 @@
   border-radius: $notification-size-radius;
   margin-bottom: 1em;
   height: 2.75rem;
-  transform: translateX(calc(100% - 2.75rem));
-  transition: transform 0.3s ease-out;
+  box-shadow: 0 0 0 1px transparent inset;
+  transform: translateX(calc(100% - 2.75rem - 2px));
+  transition: transform 0.3s ease-out, box-shadow 0s 0.3s;
   
   &:hover {
     transform: translateX(0);
-    border: 1px solid $notification-color-border;
+    box-shadow: 0 0 0 1px $notification-color-border inset;
+    transition: transform 0.3s ease-in, box-shadow 0s 0s;
   }
 
   &:hover &-message {
@@ -20,14 +22,13 @@
   }
 
   &:hover &-icon {
-    border: none;
-    border-radius: 0;
-    border-right: 1px solid $notification-color-border;
-    transition: border-radius 0s 0.3s, border 0s 0.3s;
+    border-radius: $notification-size-radius 0 0 $notification-size-radius;
+    transition: border-radius 0.2s 0.3s;
   }
 
   @media screen and (min-width: 1281px) {
-    border: 1px solid $notification-color-border;
+    line-height: 1.2;
+    box-shadow: 0 0 0 1px $notification-color-border inset;
     transform: translateX(0);
   }
 
@@ -39,13 +40,12 @@
   &-icon {
     width: 2.75rem;
     text-align: center;
-    border: 1px solid $notification-color-border;
+    box-shadow: 0 0 0 1px $notification-color-border inset;
     border-radius: $notification-size-radius;
-    transition: border-radius 0.3s 0s, border 0s 0s;
+    transition: border-radius 0.2s 0s;
     
     @media screen and (min-width: 1281px) {
-      border: none;
-      border-right: 1px solid $notification-color-border;
+      border-radius: $notification-size-radius 0 0 $notification-size-radius;
     }
   }
 
@@ -61,11 +61,16 @@
 }
 
 &-list {
+  display: none;
   position: absolute;
   overflow: hidden;
   top: 1rem;
   right: 1rem;
   list-style-type: none;
-  padding: 0;
+  padding: 0.2rem 0 0;
   margin: 0;
+
+  @media screen and (min-width: 800px) {
+    display: block;
+  }
 }
