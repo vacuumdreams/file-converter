@@ -1,0 +1,8 @@
+body {
+  background-color: $color-bg-main;
+  font-size: 0.75rem;
+
+  @media screen and (min-width: 1281px) {
+    font-size: 0.85rem;
+  }
+}

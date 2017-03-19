@@ -1,3 +1,71 @@
-.notification {
+& {
+  display: flex;
+  background-color: $notification-color-bg;
+  align-items: stretch;
+  line-height: 1.8;
+  border-radius: $notification-size-radius;
+  margin-bottom: 1em;
+  height: 2.75rem;
+  transform: translateX(calc(100% - 2.75rem));
+  transition: transform 0.3s ease-out;
   
+  &:hover {
+    transform: translateX(0);
+    border: 1px solid $notification-color-border;
+  }
+
+  &:hover &-message {
+    visibility: visible;
+    transition: visibility 0s 0s;
+  }
+
+  &:hover &-icon {
+    border: none;
+    border-radius: 0;
+    border-right: 1px solid $notification-color-border;
+    transition: border-radius 0s 0.3s, border 0s 0.3s;
+  }
+
+  @media screen and (min-width: 1281px) {
+    border: 1px solid $notification-color-border;
+    transform: translateX(0);
+  }
+
+  &-icon,
+  &-message {
+    padding: 1em;
+  }
+
+  &-icon {
+    width: 2.75rem;
+    text-align: center;
+    border: 1px solid $notification-color-border;
+    border-radius: $notification-size-radius;
+    transition: border-radius 0.3s 0s, border 0s 0s;
+    
+    @media screen and (min-width: 1281px) {
+      border: none;
+      border-right: 1px solid $notification-color-border;
+    }
+  }
+
+  &-message {
+    margin: 0;
+    visibility: hidden;
+    transition: visibility 0s 0.3s;
+
+    @media screen and (min-width: 1281px) {
+      visibility: visible;
+    }
+  }
+}
+
+&-list {
+  position: absolute;
+  overflow: hidden;
+  top: 1rem;
+  right: 1rem;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }

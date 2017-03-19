@@ -1,5 +1,10 @@
 & {
+  display: inline-block;
   fill: $icon-color;
   width: 1em;
   height: 1em;
+
+  &-rotate {
+    animation: rotate 1s infinite;
+  }
 }
