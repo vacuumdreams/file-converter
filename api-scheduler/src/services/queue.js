@@ -21,12 +21,16 @@ class Queue extends EventEmmitter {
 
   _process() {
     const self = this
-    if (this._queue.length > 0 && Object.keys(this._processing).length < this.MAX) {
+    console.log(self._processing)
+    if (self._queue.length > 0 && Object.keys(self._processing).length < self.MAX) {
       const id = uuid.v4()
-      const item = this._queue.shift()
-      self._processing[id] = item().then(() => {
-        delete self._processing[id]
-        self.emit('process')
+      const item = self._queue.shift()
+      self._processing[id] = item().then(res => {
+        res.on('end', () => {
+          console.log(self._processing)
+          delete self._processing[id]
+          self.emit('process')
+        })
       })
     }
   }

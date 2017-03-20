@@ -47,6 +47,7 @@ module.exports = (config, io, queue) => ({
             io.to(client).emit(`progress-${id}`, data.toString())
           })
         }
+        return result.body
       })
       .catch(() => {
         io.to(client).emit(`error-${id}`, { 
