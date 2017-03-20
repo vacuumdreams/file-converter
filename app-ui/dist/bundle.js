@@ -1,442 +1,504 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+"use strict";
+
 // place to define shared services/factories on root app
-module.exports = {}
+module.exports = {};
 
 },{}],2:[function(require,module,exports){
-const actions = require('./actions')
-const presentation = require('./presentation')
-const routes = require('./routes')
-const state = require('./state')
+'use strict';
+
+var actions = require('./actions');
+var presentation = require('./presentation');
+var routes = require('./routes');
+var state = require('./state');
 
 module.exports = {
   name: 'app',
-  actions,
-  presentation,
-  routes,
-  state,
-}
+  actions: actions,
+  presentation: presentation,
+  routes: routes,
+  state: state
+};
 
 },{"./actions":1,"./presentation":6,"./routes":7,"./state":8}],3:[function(require,module,exports){
+'use strict';
+
 module.exports = {
   name: 'formButton',
   template: 'form-button.html',
   variables: {
     onSubmit: {
-      type: 'function',
+      type: 'function'
     },
     onUpdate: {
-      type: 'function',
+      type: 'function'
     },
     disabled: {
-      type: 'boolean',
+      type: 'boolean'
     },
     text: {
-      type: 'string',
-    }, 
-  },
-}
+      type: 'string'
+    }
+  }
+};
 
 },{}],4:[function(require,module,exports){
+'use strict';
+
 module.exports = {
   name: 'iconSprite',
   template: 'icon-sprite.html',
-  variables: {},
-}
+  variables: {}
+};
 
 },{}],5:[function(require,module,exports){
+'use strict';
+
 module.exports = {
   name: 'icon',
   template: 'icon.html',
   variables: {
     name: {
-      type: 'string',
+      type: 'string'
     },
     iconClass: {
-      type: 'string',
-    },
-  },
-}
+      type: 'string'
+    }
+  }
+};
 
 },{}],6:[function(require,module,exports){
-const formButton = require('./form-button')
-const icon = require('./icon')
-const iconSprite = require('./icon-sprite')
+'use strict';
+
+var formButton = require('./form-button');
+var icon = require('./icon');
+var iconSprite = require('./icon-sprite');
 
 module.exports = {
-  formButton,
-  icon,
-  iconSprite,
-}
+  formButton: formButton,
+  icon: icon,
+  iconSprite: iconSprite
+};
 
 },{"./form-button":3,"./icon":5,"./icon-sprite":4}],7:[function(require,module,exports){
-const { convert } = require('../../containers')
+'use strict';
+
+var _require = require('../../containers'),
+    convert = _require.convert;
 
 module.exports = {
-  '/': convert,
-}
+  '/': convert
+};
 
 },{"../../containers":21}],8:[function(require,module,exports){
+"use strict";
+
 // place to define shared controllers on root app
-module.exports = {}
+module.exports = {};
 
 },{}],9:[function(require,module,exports){
-const ServiceSchedule = require('./schedule')
-const ServiceScheduleIO = require('./schedule-io')
+'use strict';
+
+var ServiceSchedule = require('./schedule');
+var ServiceScheduleIO = require('./schedule-io');
 
 module.exports = {
-  ServiceSchedule,
-  ServiceScheduleIO,
-}
+  ServiceSchedule: ServiceSchedule,
+  ServiceScheduleIO: ServiceScheduleIO
+};
 
 },{"./schedule":11,"./schedule-io":10}],10:[function(require,module,exports){
-const io = require('socket.io-client')
+'use strict';
+
+var io = require('socket.io-client');
 
 module.exports = function ServiceScheduleIO() {
-  const socket = io('http://localhost:8021')
-  return ({
+  var socket = io('http://localhost:8021');
+  return {
     emit: socket.emit.bind(socket),
-    on: socket.on.bind(socket),
-  })
-}
+    on: socket.on.bind(socket)
+  };
+};
 
 },{"socket.io-client":65}],11:[function(require,module,exports){
-const { EVENTS } = require('../constants') 
+'use strict';
 
-module.exports = function ServiceSchedule($http) { 
-  return ({
-    send: (scope, pkg) => $http.post('http://localhost:8020/schedule', pkg)
-      .then(res => {
-        scope.$broadcast(EVENTS.SCHEDULE.SEND.SUCCESS, res.data.data)
-      }),
-  })
-}
+var _require = require('../constants'),
+    EVENTS = _require.EVENTS;
+
+module.exports = function ServiceSchedule($http) {
+  return {
+    send: function send(scope, pkg) {
+      return $http.post('http://localhost:8020/schedule', pkg).then(function (res) {
+        scope.$broadcast(EVENTS.SCHEDULE.SEND.SUCCESS, res.data.data);
+      });
+    }
+  };
+};
 
 },{"../constants":13}],12:[function(require,module,exports){
+'use strict';
+
 module.exports = {
   SCHEDULE: {
     SEND: {
-      SUCCESS: 'schedule:send:success',
-    },
+      SUCCESS: 'schedule:send:success'
+    }
   },
   IO: {
-    CONNECT: 'io:connect',
+    CONNECT: 'io:connect'
   },
   CONVERT: {
     NEW: 'convert:new',
     START: 'convert:start',
     PROGRESS: 'convert:progress',
     COMPLETE: 'convert:complete',
-    ERROR: 'convert:error',
-  },
-}
+    ERROR: 'convert:error'
+  }
+};
 
 },{}],13:[function(require,module,exports){
-const EVENTS = require('./events')
-const STATUS = require('./status')
-const NOTIFICATION = require('./notification.js')
+'use strict';
+
+var EVENTS = require('./events');
+var STATUS = require('./status');
+var NOTIFICATION = require('./notification.js');
 
 module.exports = {
-  EVENTS,
-  STATUS,
-  NOTIFICATION,
-}
+  EVENTS: EVENTS,
+  STATUS: STATUS,
+  NOTIFICATION: NOTIFICATION
+};
 
 },{"./events":12,"./notification.js":14,"./status":15}],14:[function(require,module,exports){
+'use strict';
+
 module.exports = {
   STARTED: {
-    icon: 'info',
+    icon: 'info'
   },
   COMPLETE: {
-    icon: 'tick',
+    icon: 'tick'
   },
   ERROR: {
-    icon: 'failure',
-  },
-}
+    icon: 'failure'
+  }
+};
 
 },{}],15:[function(require,module,exports){
+'use strict';
+
 module.exports = {
   QUEUED: {
     icon: 'clock',
-    text: 'In Queue',
+    text: 'In Queue'
   },
   STARTED: {
     icon: 'process',
-    text: 'Processing',
+    text: 'Processing'
   },
   COMPLETE: {
     icon: 'tick',
-    text: 'Processed',
+    text: 'Processed'
   },
   ERROR: {
     icon: 'failure',
-    text: 'Failed',
-  },
-}
+    text: 'Failed'
+  }
+};
 
 },{}],16:[function(require,module,exports){
-const actions = require('./actions')
-const presentation = require('./presentation')
-const state = require('./state')
+'use strict';
+
+var actions = require('./actions');
+var presentation = require('./presentation');
+var state = require('./state');
 
 module.exports = {
   name: 'app.convert',
   template: 'convert.html',
-  actions,
-  presentation,
-  state,
-}
+  actions: actions,
+  presentation: presentation,
+  state: state
+};
 
 },{"./actions":9,"./presentation":17,"./state":20}],17:[function(require,module,exports){
-const itemList = require('./item-list')
-const notificationList = require('./notification-list')
+'use strict';
+
+var itemList = require('./item-list');
+var notificationList = require('./notification-list');
 
 module.exports = {
-  itemList,
-  notificationList,
-}
+  itemList: itemList,
+  notificationList: notificationList
+};
 
 },{"./item-list":18,"./notification-list":19}],18:[function(require,module,exports){
+'use strict';
+
 module.exports = {
   name: 'itemList',
   template: 'item-list.html',
   variables: {
     list: {
-      type: 'array',
-    },
-  },
-}
+      type: 'array'
+    }
+  }
+};
 
 },{}],19:[function(require,module,exports){
+'use strict';
+
 module.exports = {
   name: 'notificationList',
   template: 'notification-list.html',
   variables: {
     list: {
-      type: 'array',
-    },
-  },
-}
+      type: 'array'
+    }
+  }
+};
 
 },{}],20:[function(require,module,exports){
-const moment = require('moment')
-const uuid = require('uuid')
-const { merge } = require('angular')
+'use strict';
 
-const { EVENTS, STATUS, NOTIFICATION } = require('../constants')
+var moment = require('moment');
+var uuid = require('uuid');
 
-const getItem = (vm, scope, type) => ({
-  package: {
-    client: undefined,
-    service: 'converter',
-    task: `to-${type}`,
-    method: 'post',
-    progress: true,
-    data: {
-      path: `file://dummy.${type}`,
+var _require = require('angular'),
+    merge = _require.merge;
+
+var _require2 = require('../constants'),
+    EVENTS = _require2.EVENTS,
+    STATUS = _require2.STATUS,
+    NOTIFICATION = _require2.NOTIFICATION;
+
+var getItem = function getItem(vm, scope, type) {
+  return {
+    package: {
+      client: undefined,
+      service: 'converter',
+      task: 'to-' + type,
+      method: 'post',
+      progress: true,
+      data: {
+        path: 'file://dummy.' + type
+      }
     },
-  },
-  text: `New ${type.toUpperCase()} Conversion`,
-  disabled: true,
-  add: () => {
-    if (vm.pdf.disabled === true) return
-    scope.$broadcast(EVENTS.CONVERT.NEW, merge({ id: uuid.v4() }, vm[type].package))
-  },
-  update: obj => merge(vm[type], obj),
-})
+    text: 'New ' + type.toUpperCase() + ' Conversion',
+    disabled: true,
+    add: function add() {
+      if (vm.pdf.disabled === true) return;
+      scope.$broadcast(EVENTS.CONVERT.NEW, merge({ id: uuid.v4() }, vm[type].package));
+    },
+    update: function update(obj) {
+      return merge(vm[type], obj);
+    }
+  };
+};
 
 module.exports = function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
-  const vm = this
+  var vm = this;
 
-  ServiceScheduleIO.on('id', id => {
-    $scope.$broadcast(EVENTS.IO.CONNECT, id)
-  })
+  ServiceScheduleIO.on('id', function (id) {
+    $scope.$broadcast(EVENTS.IO.CONNECT, id);
+  });
 
-  $scope.$on(EVENTS.IO.CONNECT, (e, id) => {
-    const override = {
+  $scope.$on(EVENTS.IO.CONNECT, function (e, id) {
+    var override = {
       disabled: false,
       package: {
-        client: id,
-      },
-    }
-    vm.html.update(override)
-    vm.pdf.update(override)
-    $scope.$digest()
-  })
+        client: id
+      }
+    };
+    vm.html.update(override);
+    vm.pdf.update(override);
+    $scope.$digest();
+  });
 
-  $scope.$on(EVENTS.SCHEDULE.SEND.SUCCESS, (e, res) => {
+  $scope.$on(EVENTS.SCHEDULE.SEND.SUCCESS, function (e, res) {
     vm.list.items.push({
       id: res.id,
-      title: `${res.type} #${vm.list.items.filter(item => item.type === res.type).length + 1}`,
+      title: res.type + ' #' + (vm.list.items.filter(function (item) {
+        return item.type === res.type;
+      }).length + 1),
       time: {
         raw: res.started,
-        display: moment(res.started).format('ddd, MMM D, h:mma'),
+        display: moment(res.started).format('ddd, MMM D, h:mma')
       },
       type: res.type,
       status: STATUS.QUEUED,
       progress: {
         value: 0,
-        max: 100,
-      },
-    })
-  })
+        max: 100
+      }
+    });
+  });
 
-  $scope.$on(EVENTS.CONVERT.START, (e, {item}) => {
-    item.status = STATUS.STARTED
+  $scope.$on(EVENTS.CONVERT.START, function (e, _ref) {
+    var item = _ref.item;
+
+    item.status = STATUS.STARTED;
     vm.notifications.add({
       id: item.id,
-      message: `Request '${item.title}' started processing`,
-      icon: NOTIFICATION.STARTED.icon,
-    })
-    $scope.$digest()    
-  })
+      message: 'Request \'' + item.title + '\' started processing',
+      icon: NOTIFICATION.STARTED.icon
+    });
+    $scope.$digest();
+  });
 
-  $scope.$on(EVENTS.CONVERT.PROGRESS, (e, {item, value}) => {
-    item.progress.value = value
-    $scope.$digest()
-  })
+  $scope.$on(EVENTS.CONVERT.PROGRESS, function (e, _ref2) {
+    var item = _ref2.item,
+        value = _ref2.value;
 
-  $scope.$on(EVENTS.CONVERT.COMPLETE, (e, {item}) => {
-    item.status = STATUS.COMPLETE
+    item.progress.value = value;
+    $scope.$digest();
+  });
+
+  $scope.$on(EVENTS.CONVERT.COMPLETE, function (e, _ref3) {
+    var item = _ref3.item;
+
+    item.status = STATUS.COMPLETE;
     vm.notifications.add({
       id: item.id,
-      message: `Request '${item.title}' processed`,
-      icon: NOTIFICATION.COMPLETE.icon,
-    })
-    $scope.$digest()
-  })
+      message: 'Request \'' + item.title + '\' processed',
+      icon: NOTIFICATION.COMPLETE.icon
+    });
+    $scope.$digest();
+  });
 
-  $scope.$on(EVENTS.CONVERT.ERROR, (e, item) => {
-    item.status = STATUS.ERROR
+  $scope.$on(EVENTS.CONVERT.ERROR, function (e, item) {
+    item.status = STATUS.ERROR;
     vm.notifications.add({
       id: item.id,
-      message: `Request '${item.title}' failed`,
-      icon: NOTIFICATION.ERROR.icon,
-    })
-    $scope.$digest()
-  })
+      message: 'Request \'' + item.title + '\' failed',
+      icon: NOTIFICATION.ERROR.icon
+    });
+    $scope.$digest();
+  });
 
-  $scope.$on(EVENTS.CONVERT.NEW, (e, pkg) => {
-    let item
-    ServiceSchedule.send($scope, pkg)
-    ServiceScheduleIO.on(`start-${pkg.id}`, () => {
-      item = vm.list.items.find(item => item.id === pkg.id)
-      $scope.$broadcast(EVENTS.CONVERT.START, {item}) 
-    })
-    ServiceScheduleIO.on(`progress-${pkg.id}`, percentage => {
-      $scope.$broadcast(EVENTS.CONVERT.PROGRESS, {item, value: percentage}) 
-    })
-    ServiceScheduleIO.on(`complete-${pkg.id}`, () => {
-      $scope.$broadcast(EVENTS.CONVERT.COMPLETE, {item}) 
-    })
-    ServiceScheduleIO.on(`error-${pkg.id}`, () => {
-      $scope.$broadcast(EVENTS.CONVERT.COMPLETE, {item}) 
-    })
-  })
+  $scope.$on(EVENTS.CONVERT.NEW, function (e, pkg) {
+    var item = void 0;
+    ServiceSchedule.send($scope, pkg);
+    ServiceScheduleIO.on('start-' + pkg.id, function () {
+      item = vm.list.items.find(function (item) {
+        return item.id === pkg.id;
+      });
+      $scope.$broadcast(EVENTS.CONVERT.START, { item: item });
+    });
+    ServiceScheduleIO.on('progress-' + pkg.id, function (percentage) {
+      $scope.$broadcast(EVENTS.CONVERT.PROGRESS, { item: item, value: percentage });
+    });
+    ServiceScheduleIO.on('complete-' + pkg.id, function () {
+      $scope.$broadcast(EVENTS.CONVERT.COMPLETE, { item: item });
+    });
+    ServiceScheduleIO.on('error-' + pkg.id, function () {
+      $scope.$broadcast(EVENTS.CONVERT.COMPLETE, { item: item });
+    });
+  });
 
-  vm.title = 'Conversions'
+  vm.title = 'Conversions';
 
   vm.list = {
-    header: [
-      'Name',
-      'Created at',
-      'Type',
-      'Status',
-    ],
-    items: [],
-  }
+    header: ['Name', 'Created at', 'Type', 'Status'],
+    items: []
+  };
 
-  vm.html = getItem(vm, $scope, 'html')
-  vm.pdf = getItem(vm, $scope, 'pdf')
+  vm.html = getItem(vm, $scope, 'html');
+  vm.pdf = getItem(vm, $scope, 'pdf');
 
   vm.notifications = {
     list: [],
-    add: item => {
-      vm.notifications.list.push(item)
-    },
-  }
-}
+    add: function add(item) {
+      vm.notifications.list.push(item);
+    }
+  };
+};
 
-},{"../constants":13,"angular":30,"moment":59,"uuid":82}],21:[function(require,module,exports){
+},{"../constants":13,"angular":30,"moment":59,"uuid":81}],21:[function(require,module,exports){
+'use strict';
+
 module.exports = {
-  convert: require('./convert'),
-}
+  convert: require('./convert')
+};
 
 },{"./convert":16}],22:[function(require,module,exports){
-const app = require('../../lib/app')
+'use strict';
 
-const main = require('./app')
-const containers = require('./containers')
+var app = require('../../lib/app');
 
-app({ main, containers })
+var main = require('./app');
+var containers = require('./containers');
+
+app({ main: main, containers: containers });
 
 },{"../../lib/app":23,"./app":2,"./containers":21}],23:[function(require,module,exports){
-const angular = require('angular')
-require('angular-route')
-require('angular-animate')
+'use strict';
 
-const directiveTypeMap = {
+var angular = require('angular');
+require('angular-route');
+require('angular-animate');
+
+var directiveTypeMap = {
   'string': '@',
   'boolean': '<',
   'array': '<',
-  'function': '&',
-}
+  'function': '&'
+};
 
-const addDirectives = (moduleName, directives) => {
-  Object.keys(directives).map(key => {
-    const directive = directives[key]
-    const scope = {}
-    Object.keys(directive.variables).map(varName => {
-      scope[varName] = directiveTypeMap[directive.variables[varName].type]
-    })
+var addDirectives = function addDirectives(moduleName, directives) {
+  Object.keys(directives).map(function (key) {
+    var directive = directives[key];
+    var scope = {};
+    Object.keys(directive.variables).map(function (varName) {
+      scope[varName] = directiveTypeMap[directive.variables[varName].type];
+    });
 
-    angular.module(moduleName).directive(key, () => ({
-      restrict: 'E',
-      templateUrl: `presentation/${directive.template}`,
-      scope,
-    }))
-  })
-}
+    angular.module(moduleName).directive(key, function () {
+      return {
+        restrict: 'E',
+        templateUrl: 'presentation/' + directive.template,
+        scope: scope
+      };
+    });
+  });
+};
 
-const addFactories = (moduleName, factories) => {
-  Object.keys(factories).map(key => {
-    const factory = factories[key]
-    angular.module(moduleName)
-    .factory(factory.name, factory)
-  })
-}
+var addFactories = function addFactories(moduleName, factories) {
+  Object.keys(factories).map(function (key) {
+    var factory = factories[key];
+    angular.module(moduleName).factory(factory.name, factory);
+  });
+};
 
-module.exports = ({ main, containers }) => {
+module.exports = function (_ref) {
+  var main = _ref.main,
+      containers = _ref.containers;
 
-  angular.module(main.name, [
-    'ngRoute',
-    'ngAnimate',
-    main.routes[window.location.pathname].name,
-  ])
-  .config(['$httpProvider', $httpProvider => {
-    $httpProvider.defaults.headers.common['Content-type'] = 'application/json'
-  }])
-  .config(['$routeProvider', $routeProvider => {
-    Object.keys(main.routes).map(key => {
-      const route = main.routes[key]
+
+  angular.module(main.name, ['ngRoute', 'ngAnimate', main.routes[window.location.pathname].name]).config(['$httpProvider', function ($httpProvider) {
+    $httpProvider.defaults.headers.common['Content-type'] = 'application/json';
+  }]).config(['$routeProvider', function ($routeProvider) {
+    Object.keys(main.routes).map(function (key) {
+      var route = main.routes[key];
       $routeProvider.when(key, {
-        templateUrl: `containers/${route.template}`,
+        templateUrl: 'containers/' + route.template,
         controller: route.state.name,
-        controllerAs: 'vm',
-      })
-    })
-  }])
+        controllerAs: 'vm'
+      });
+    });
+  }]);
 
-  addDirectives(main.name, main.presentation)
+  addDirectives(main.name, main.presentation);
 
-  Object.keys(containers).map(key => {
-    const container = containers[key]
-    angular.module(container.name, [])
-    addFactories(container.name, container.actions)
-    addDirectives(container.name, container.presentation)
-    angular.module(container.name).controller(container.state.name, container.state)
-  })
-}
+  Object.keys(containers).map(function (key) {
+    var container = containers[key];
+    angular.module(container.name, []);
+    addFactories(container.name, container.actions);
+    addDirectives(container.name, container.presentation);
+    angular.module(container.name).controller(container.state.name, container.state);
+  });
+};
 
 },{"angular":30,"angular-animate":26,"angular-route":28}],24:[function(require,module,exports){
 module.exports = after
@@ -40460,7 +40522,7 @@ Socket.prototype.filterUpgrades = function (upgrades) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./transport":42,"./transports/index":43,"component-emitter":49,"debug":50,"engine.io-parser":52,"indexof":57,"parsejson":61,"parseqs":62,"parseuri":63}],42:[function(require,module,exports){
+},{"./transport":42,"./transports/index":43,"component-emitter":49,"debug":50,"engine.io-parser":52,"indexof":56,"parsejson":61,"parseqs":62,"parseuri":63}],42:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -41586,7 +41648,7 @@ Polling.prototype.uri = function () {
   return schema + '://' + (ipv6 ? '[' + this.hostname + ']' : this.hostname) + port + this.path + query;
 };
 
-},{"../transport":42,"component-inherit":38,"debug":50,"engine.io-parser":52,"parseqs":62,"xmlhttprequest-ssl":48,"yeast":84}],47:[function(require,module,exports){
+},{"../transport":42,"component-inherit":38,"debug":50,"engine.io-parser":52,"parseqs":62,"xmlhttprequest-ssl":48,"yeast":83}],47:[function(require,module,exports){
 (function (global){
 /**
  * Module dependencies.
@@ -41875,7 +41937,7 @@ WS.prototype.check = function () {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../transport":42,"component-inherit":38,"debug":50,"engine.io-parser":52,"parseqs":62,"ws":35,"yeast":84}],48:[function(require,module,exports){
+},{"../transport":42,"component-inherit":38,"debug":50,"engine.io-parser":52,"parseqs":62,"ws":35,"yeast":83}],48:[function(require,module,exports){
 (function (global){
 // browser shim for xmlhttprequest module
 
@@ -41916,7 +41978,7 @@ module.exports = function (opts) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"has-cors":56}],49:[function(require,module,exports){
+},{"has-cors":55}],49:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -43077,7 +43139,7 @@ exports.decodePayloadAsBinary = function (data, binaryType, callback) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./keys":53,"after":24,"arraybuffer.slice":31,"base64-arraybuffer":33,"blob":34,"has-binary":54,"wtf-8":83}],53:[function(require,module,exports){
+},{"./keys":53,"after":24,"arraybuffer.slice":31,"base64-arraybuffer":33,"blob":34,"has-binary":54,"wtf-8":82}],53:[function(require,module,exports){
 
 /**
  * Gets the keys for an object.
@@ -43161,12 +43223,7 @@ function hasBinary(data) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"isarray":55}],55:[function(require,module,exports){
-module.exports = Array.isArray || function (arr) {
-  return Object.prototype.toString.call(arr) == '[object Array]';
-};
-
-},{}],56:[function(require,module,exports){
+},{"isarray":57}],55:[function(require,module,exports){
 
 /**
  * Module exports.
@@ -43185,7 +43242,7 @@ try {
   module.exports = false;
 }
 
-},{}],57:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 
 var indexOf = [].indexOf;
 
@@ -43196,6 +43253,11 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
+},{}],57:[function(require,module,exports){
+module.exports = Array.isArray || function (arr) {
+  return Object.prototype.toString.call(arr) == '[object Array]';
+};
+
 },{}],58:[function(require,module,exports){
 (function (global){
 /*! JSON v3.3.2 | http://bestiejs.github.io/json3 | Copyright 2012-2014, Kit Cambridge | http://kit.mit-license.org */
@@ -44104,7 +44166,7 @@ module.exports = function(arr, obj){
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],59:[function(require,module,exports){
 //! moment.js
-//! version : 2.17.1
+//! version : 2.18.0
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
@@ -44144,6 +44206,10 @@ function isObjectEmpty(obj) {
         return false;
     }
     return true;
+}
+
+function isUndefined(input) {
+    return input === void 0;
 }
 
 function isNumber(input) {
@@ -44202,7 +44268,9 @@ function defaultParsingFlags() {
         userInvalidated : false,
         iso             : false,
         parsedDateParts : [],
-        meridiem        : null
+        meridiem        : null,
+        rfc2822         : false,
+        weekdayMismatch : false
     };
 }
 
@@ -44278,10 +44346,6 @@ function createInvalid (flags) {
     return m;
 }
 
-function isUndefined(input) {
-    return input === void 0;
-}
-
 // Plugins that add properties should also add the key here (null value),
 // so we can properly clone ourselves.
 var momentProperties = hooks.momentProperties = [];
@@ -44321,7 +44385,7 @@ function copyConfig(to, from) {
     }
 
     if (momentProperties.length > 0) {
-        for (i in momentProperties) {
+        for (i = 0; i < momentProperties.length; i++) {
             prop = momentProperties[i];
             val = from[prop];
             if (!isUndefined(val)) {
@@ -44458,8 +44522,11 @@ function set (config) {
     }
     this._config = config;
     // Lenient ordinal parsing accepts just a number in addition to
-    // number + (possibly) stuff coming from _ordinalParseLenient.
-    this._ordinalParseLenient = new RegExp(this._ordinalParse.source + '|' + (/\d{1,2}/).source);
+    // number + (possibly) stuff coming from _dayOfMonthOrdinalParse.
+    // TODO: Remove "ordinalParse" fallback in next major release.
+    this._dayOfMonthOrdinalParseLenient = new RegExp(
+        (this._dayOfMonthOrdinalParse.source || this._ordinalParse.source) +
+            '|' + (/\d{1,2}/).source);
 }
 
 function mergeConfigs(parentConfig, childConfig) {
@@ -44557,7 +44624,7 @@ function invalidDate () {
 }
 
 var defaultOrdinal = '%d';
-var defaultOrdinalParse = /\d{1,2}/;
+var defaultDayOfMonthOrdinalParse = /\d{1,2}/;
 
 function ordinal (number) {
     return this._ordinal.replace('%d', number);
@@ -44567,6 +44634,7 @@ var defaultRelativeTime = {
     future : 'in %s',
     past   : '%s ago',
     s  : 'a few seconds',
+    ss : '%d seconds',
     m  : 'a minute',
     mm : '%d minutes',
     h  : 'an hour',
@@ -44749,7 +44817,7 @@ function makeFormatFunction(format) {
     return function (mom) {
         var output = '', i;
         for (i = 0; i < length; i++) {
-            output += array[i] instanceof Function ? array[i].call(mom, format) : array[i];
+            output += isFunction(array[i]) ? array[i].call(mom, format) : array[i];
         }
         return output;
     };
@@ -44952,7 +45020,8 @@ var MONTHS_IN_FORMAT = /D[oD]?(\[[^\[\]]*\]|\s)+MMMM?/;
 var defaultLocaleMonths = 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_');
 function localeMonths (m, format) {
     if (!m) {
-        return this._months;
+        return isArray(this._months) ? this._months :
+            this._months['standalone'];
     }
     return isArray(this._months) ? this._months[m.month()] :
         this._months[(this._months.isFormat || MONTHS_IN_FORMAT).test(format) ? 'format' : 'standalone'][m.month()];
@@ -44961,7 +45030,8 @@ function localeMonths (m, format) {
 var defaultLocaleMonthsShort = 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_');
 function localeMonthsShort (m, format) {
     if (!m) {
-        return this._monthsShort;
+        return isArray(this._monthsShort) ? this._monthsShort :
+            this._monthsShort['standalone'];
     }
     return isArray(this._monthsShort) ? this._monthsShort[m.month()] :
         this._monthsShort[MONTHS_IN_FORMAT.test(format) ? 'format' : 'standalone'][m.month()];
@@ -45228,11 +45298,11 @@ function getIsLeapYear () {
 }
 
 function createDate (y, m, d, h, M, s, ms) {
-    //can't just apply() to create a date:
-    //http://stackoverflow.com/questions/181348/instantiating-a-javascript-object-by-calling-prototype-constructor-apply
+    // can't just apply() to create a date:
+    // https://stackoverflow.com/q/181348
     var date = new Date(y, m, d, h, M, s, ms);
 
-    //the date constructor remaps years 0-99 to 1900-1999
+    // the date constructor remaps years 0-99 to 1900-1999
     if (y < 100 && y >= 0 && isFinite(date.getFullYear())) {
         date.setFullYear(y);
     }
@@ -45242,7 +45312,7 @@ function createDate (y, m, d, h, M, s, ms) {
 function createUTCDate (y) {
     var date = new Date(Date.UTC.apply(null, arguments));
 
-    //the Date.UTC function remaps years 0-99 to 1900-1999
+    // the Date.UTC function remaps years 0-99 to 1900-1999
     if (y < 100 && y >= 0 && isFinite(date.getUTCFullYear())) {
         date.setUTCFullYear(y);
     }
@@ -45259,7 +45329,7 @@ function firstWeekOffset(year, dow, doy) {
     return -fwdlw + fwd - 1;
 }
 
-//http://en.wikipedia.org/wiki/ISO_week_date#Calculating_a_date_given_the_year.2C_week_number_and_weekday
+// https://en.wikipedia.org/wiki/ISO_week_date#Calculating_a_date_given_the_year.2C_week_number_and_weekday
 function dayOfYearFromWeeks(year, week, weekday, dow, doy) {
     var localWeekday = (7 + weekday - dow) % 7,
         weekOffset = firstWeekOffset(year, dow, doy),
@@ -45460,7 +45530,8 @@ function parseIsoWeekday(input, locale) {
 var defaultLocaleWeekdays = 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_');
 function localeWeekdays (m, format) {
     if (!m) {
-        return this._weekdays;
+        return isArray(this._weekdays) ? this._weekdays :
+            this._weekdays['standalone'];
     }
     return isArray(this._weekdays) ? this._weekdays[m.day()] :
         this._weekdays[this._weekdays.isFormat.test(format) ? 'format' : 'standalone'][m.day()];
@@ -45780,8 +45851,10 @@ addRegexToken('a',  matchMeridiem);
 addRegexToken('A',  matchMeridiem);
 addRegexToken('H',  match1to2);
 addRegexToken('h',  match1to2);
+addRegexToken('k',  match1to2);
 addRegexToken('HH', match1to2, match2);
 addRegexToken('hh', match1to2, match2);
+addRegexToken('kk', match1to2, match2);
 
 addRegexToken('hmm', match3to4);
 addRegexToken('hmmss', match5to6);
@@ -45789,6 +45862,10 @@ addRegexToken('Hmm', match3to4);
 addRegexToken('Hmmss', match5to6);
 
 addParseToken(['H', 'HH'], HOUR);
+addParseToken(['k', 'kk'], function (input, array, config) {
+    var kInput = toInt(input);
+    array[HOUR] = kInput === 24 ? 0 : kInput;
+});
 addParseToken(['a', 'A'], function (input, array, config) {
     config._isPm = config._locale.isPM(input);
     config._meridiem = input;
@@ -45859,7 +45936,7 @@ var baseConfig = {
     longDateFormat: defaultLongDateFormat,
     invalidDate: defaultInvalidDate,
     ordinal: defaultOrdinal,
-    ordinalParse: defaultOrdinalParse,
+    dayOfMonthOrdinalParse: defaultDayOfMonthOrdinalParse,
     relativeTime: defaultRelativeTime,
 
     months: defaultLocaleMonths,
@@ -46170,6 +46247,77 @@ function configFromISO(config) {
     }
 }
 
+// RFC 2822 regex: For details see https://tools.ietf.org/html/rfc2822#section-3.3
+var basicRfcRegex = /^((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d?\d\s(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(?:\d\d)?\d\d\s)(\d\d:\d\d)(\:\d\d)?(\s(?:UT|GMT|[ECMP][SD]T|[A-IK-Za-ik-z]|[+-]\d{4}))$/;
+
+// date and time from ref 2822 format
+function configFromRFC2822(config) {
+    var string, match, dayFormat,
+        dateFormat, timeFormat, tzFormat;
+    var timezones = {
+        ' GMT': ' +0000',
+        ' EDT': ' -0400',
+        ' EST': ' -0500',
+        ' CDT': ' -0500',
+        ' CST': ' -0600',
+        ' MDT': ' -0600',
+        ' MST': ' -0700',
+        ' PDT': ' -0700',
+        ' PST': ' -0800'
+    };
+    var military = 'YXWVUTSRQPONZABCDEFGHIKLM';
+    var timezone, timezoneIndex;
+
+    string = config._i
+        .replace(/\([^\)]*\)|[\n\t]/g, ' ') // Remove comments and folding whitespace
+        .replace(/(\s\s+)/g, ' ') // Replace multiple-spaces with a single space
+        .replace(/^\s|\s$/g, ''); // Remove leading and trailing spaces
+    match = basicRfcRegex.exec(string);
+
+    if (match) {
+        dayFormat = match[1] ? 'ddd' + ((match[1].length === 5) ? ', ' : ' ') : '';
+        dateFormat = 'D MMM ' + ((match[2].length > 10) ? 'YYYY ' : 'YY ');
+        timeFormat = 'HH:mm' + (match[4] ? ':ss' : '');
+
+        // TODO: Replace the vanilla JS Date object with an indepentent day-of-week check.
+        if (match[1]) { // day of week given
+            var momentDate = new Date(match[2]);
+            var momentDay = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][momentDate.getDay()];
+
+            if (match[1].substr(0,3) !== momentDay) {
+                getParsingFlags(config).weekdayMismatch = true;
+                config._isValid = false;
+                return;
+            }
+        }
+
+        switch (match[5].length) {
+            case 2: // military
+                if (timezoneIndex === 0) {
+                    timezone = ' +0000';
+                } else {
+                    timezoneIndex = military.indexOf(match[5][1].toUpperCase()) - 12;
+                    timezone = ((timezoneIndex < 0) ? ' -' : ' +') +
+                        (('' + timezoneIndex).replace(/^-?/, '0')).match(/..$/)[0] + '00';
+                }
+                break;
+            case 4: // Zone
+                timezone = timezones[match[5]];
+                break;
+            default: // UT or +/-9999
+                timezone = timezones[' GMT'];
+        }
+        match[5] = timezone;
+        config._i = match.splice(1).join('');
+        tzFormat = ' ZZ';
+        config._f = dayFormat + dateFormat + timeFormat + tzFormat;
+        configFromStringAndFormat(config);
+        getParsingFlags(config).rfc2822 = true;
+    } else {
+        config._isValid = false;
+    }
+}
+
 // date from iso format or fallback
 function configFromString(config) {
     var matched = aspNetJsonRegex.exec(config._i);
@@ -46182,13 +46330,24 @@ function configFromString(config) {
     configFromISO(config);
     if (config._isValid === false) {
         delete config._isValid;
-        hooks.createFromInputFallback(config);
+    } else {
+        return;
     }
+
+    configFromRFC2822(config);
+    if (config._isValid === false) {
+        delete config._isValid;
+    } else {
+        return;
+    }
+
+    // Final attempt, use Input Fallback
+    hooks.createFromInputFallback(config);
 }
 
 hooks.createFromInputFallback = deprecate(
-    'value provided is not in a recognized ISO format. moment construction falls back to js Date(), ' +
-    'which is not reliable across all browsers and versions. Non ISO date formats are ' +
+    'value provided is not in a recognized RFC2822 or ISO format. moment construction falls back to js Date(), ' +
+    'which is not reliable across all browsers and versions. Non RFC2822/ISO date formats are ' +
     'discouraged and will be removed in an upcoming major release. Please refer to ' +
     'http://momentjs.com/guides/#/warnings/js-date/ for more info.',
     function (config) {
@@ -46235,10 +46394,10 @@ function configFromArray (config) {
     }
 
     //if the day of the year is set, figure out what it is
-    if (config._dayOfYear) {
+    if (config._dayOfYear != null) {
         yearToUse = defaults(config._a[YEAR], currentDate[YEAR]);
 
-        if (config._dayOfYear > daysInYear(yearToUse)) {
+        if (config._dayOfYear > daysInYear(yearToUse) || config._dayOfYear === 0) {
             getParsingFlags(config)._overflowDayOfYear = true;
         }
 
@@ -46342,6 +46501,9 @@ function dayOfYearFromWeekInfo(config) {
 // constant that refers to the ISO standard
 hooks.ISO_8601 = function () {};
 
+// constant that refers to the RFC 2822 form
+hooks.RFC_2822 = function () {};
+
 // date from string and format string
 function configFromStringAndFormat(config) {
     // TODO: Move this to another part of the creation flow to prevent circular deps
@@ -46349,7 +46511,10 @@ function configFromStringAndFormat(config) {
         configFromISO(config);
         return;
     }
-
+    if (config._f === hooks.RFC_2822) {
+        configFromRFC2822(config);
+        return;
+    }
     config._a = [];
     getParsingFlags(config).empty = true;
 
@@ -46541,7 +46706,7 @@ function prepareConfig (config) {
 
 function configFromInput(config) {
     var input = config._i;
-    if (input === undefined) {
+    if (isUndefined(input)) {
         config._d = new Date(hooks.now());
     } else if (isDate(input)) {
         config._d = new Date(input.valueOf());
@@ -46552,7 +46717,7 @@ function configFromInput(config) {
             return parseInt(obj, 10);
         });
         configFromArray(config);
-    } else if (typeof(input) === 'object') {
+    } else if (isObject(input)) {
         configFromObject(config);
     } else if (isNumber(input)) {
         // from milliseconds
@@ -46653,6 +46818,38 @@ var now = function () {
     return Date.now ? Date.now() : +(new Date());
 };
 
+var ordering = ['year', 'quarter', 'month', 'week', 'day', 'hour', 'minute', 'second', 'millisecond'];
+
+function isDurationValid(m) {
+    for (var key in m) {
+        if (!(ordering.indexOf(key) !== -1 && (m[key] == null || !isNaN(m[key])))) {
+            return false;
+        }
+    }
+
+    var unitHasDecimal = false;
+    for (var i = 0; i < ordering.length; ++i) {
+        if (m[ordering[i]]) {
+            if (unitHasDecimal) {
+                return false; // only allow non-integers for smallest unit
+            }
+            if (parseFloat(m[ordering[i]]) !== toInt(m[ordering[i]])) {
+                unitHasDecimal = true;
+            }
+        }
+    }
+
+    return true;
+}
+
+function isValid$1() {
+    return this._isValid;
+}
+
+function createInvalid$1() {
+    return createDuration(NaN);
+}
+
 function Duration (duration) {
     var normalizedInput = normalizeObjectUnits(duration),
         years = normalizedInput.year || 0,
@@ -46664,6 +46861,8 @@ function Duration (duration) {
         minutes = normalizedInput.minute || 0,
         seconds = normalizedInput.second || 0,
         milliseconds = normalizedInput.millisecond || 0;
+
+    this._isValid = isDurationValid(normalizedInput);
 
     // representation for dateAddRemove
     this._milliseconds = +milliseconds +
@@ -46788,7 +46987,7 @@ hooks.updateOffset = function () {};
 // a second time. In case it wants us to change the offset again
 // _changeInProgress == true case, then we have to adjust, because
 // there is no such time in the given timezone.
-function getSetOffset (input, keepLocalTime) {
+function getSetOffset (input, keepLocalTime, keepMinutes) {
     var offset = this._offset || 0,
         localAdjust;
     if (!this.isValid()) {
@@ -46800,7 +46999,7 @@ function getSetOffset (input, keepLocalTime) {
             if (input === null) {
                 return this;
             }
-        } else if (Math.abs(input) < 16) {
+        } else if (Math.abs(input) < 16 && !keepMinutes) {
             input = input * 60;
         }
         if (!this._isUTC && keepLocalTime) {
@@ -46858,7 +47057,7 @@ function setOffsetToLocal (keepLocalTime) {
 
 function setOffsetToParsedOffset () {
     if (this._tzm != null) {
-        this.utcOffset(this._tzm);
+        this.utcOffset(this._tzm, false, true);
     } else if (typeof this._i === 'string') {
         var tZone = offsetFromString(matchOffset, this._i);
         if (tZone != null) {
@@ -46990,6 +47189,7 @@ function createDuration (input, key) {
 }
 
 createDuration.fn = Duration.prototype;
+createDuration.invalid = createInvalid$1;
 
 function parseIso (inp, sign) {
     // We'd normally use ~~inp for this, but unfortunately it also
@@ -47226,18 +47426,19 @@ function toString () {
     return this.clone().locale('en').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ');
 }
 
-function toISOString () {
+function toISOString() {
+    if (!this.isValid()) {
+        return null;
+    }
     var m = this.clone().utc();
-    if (0 < m.year() && m.year() <= 9999) {
-        if (isFunction(Date.prototype.toISOString)) {
-            // native implementation is ~50x faster, use it when we can
-            return this.toDate().toISOString();
-        } else {
-            return formatMoment(m, 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
-        }
-    } else {
+    if (m.year() < 0 || m.year() > 9999) {
         return formatMoment(m, 'YYYYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
     }
+    if (isFunction(Date.prototype.toISOString)) {
+        // native implementation is ~50x faster, use it when we can
+        return this.toDate().toISOString();
+    }
+    return formatMoment(m, 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
 }
 
 /**
@@ -47257,7 +47458,7 @@ function inspect () {
         zone = 'Z';
     }
     var prefix = '[' + func + '("]';
-    var year = (0 < this.year() && this.year() <= 9999) ? 'YYYY' : 'YYYYYY';
+    var year = (0 <= this.year() && this.year() <= 9999) ? 'YYYY' : 'YYYYYY';
     var datetime = '-MM-DD[T]HH:mm:ss.SSS';
     var suffix = zone + '[")]';
 
@@ -47425,7 +47626,7 @@ function toJSON () {
     return this.isValid() ? this.toISOString() : null;
 }
 
-function isValid$1 () {
+function isValid$2 () {
     return isValid(this);
 }
 
@@ -47585,7 +47786,10 @@ addUnitPriority('date', 9);
 addRegexToken('D',  match1to2);
 addRegexToken('DD', match1to2, match2);
 addRegexToken('Do', function (isStrict, locale) {
-    return isStrict ? locale._ordinalParse : locale._ordinalParseLenient;
+    // TODO: Remove "ordinalParse" fallback in next major release.
+    return isStrict ?
+      (locale._dayOfMonthOrdinalParse || locale._ordinalParse) :
+      locale._dayOfMonthOrdinalParseLenient;
 });
 
 addParseToken(['D', 'DD'], DATE);
@@ -47765,7 +47969,7 @@ proto.isBetween         = isBetween;
 proto.isSame            = isSame;
 proto.isSameOrAfter     = isSameOrAfter;
 proto.isSameOrBefore    = isSameOrBefore;
-proto.isValid           = isValid$1;
+proto.isValid           = isValid$2;
 proto.lang              = lang;
 proto.locale            = locale;
 proto.localeData        = localeData;
@@ -47990,7 +48194,7 @@ function listWeekdaysMin (localeSorted, format, index) {
 }
 
 getSetGlobalLocale('en', {
-    ordinalParse: /\d{1,2}(th|st|nd|rd)/,
+    dayOfMonthOrdinalParse: /\d{1,2}(th|st|nd|rd)/,
     ordinal : function (number) {
         var b = number % 10,
             output = (toInt(number % 100 / 10) === 1) ? 'th' :
@@ -48111,6 +48315,9 @@ function monthsToDays (months) {
 }
 
 function as (units) {
+    if (!this.isValid()) {
+        return NaN;
+    }
     var days;
     var months;
     var milliseconds = this._milliseconds;
@@ -48139,6 +48346,9 @@ function as (units) {
 
 // TODO: Use this.as('ms')?
 function valueOf$1 () {
+    if (!this.isValid()) {
+        return NaN;
+    }
     return (
         this._milliseconds +
         this._days * 864e5 +
@@ -48164,12 +48374,12 @@ var asYears        = makeAs('y');
 
 function get$2 (units) {
     units = normalizeUnits(units);
-    return this[units + 's']();
+    return this.isValid() ? this[units + 's']() : NaN;
 }
 
 function makeGetter(name) {
     return function () {
-        return this._data[name];
+        return this.isValid() ? this._data[name] : NaN;
     };
 }
 
@@ -48187,11 +48397,12 @@ function weeks () {
 
 var round = Math.round;
 var thresholds = {
-    s: 45,  // seconds to minute
-    m: 45,  // minutes to hour
-    h: 22,  // hours to day
-    d: 26,  // days to month
-    M: 11   // months to year
+    ss: 44,         // a few seconds to seconds
+    s : 45,         // seconds to minute
+    m : 45,         // minutes to hour
+    h : 22,         // hours to day
+    d : 26,         // days to month
+    M : 11          // months to year
 };
 
 // helper function for moment.fn.from, moment.fn.fromNow, and moment.duration.fn.humanize
@@ -48208,16 +48419,17 @@ function relativeTime$1 (posNegDuration, withoutSuffix, locale) {
     var months   = round(duration.as('M'));
     var years    = round(duration.as('y'));
 
-    var a = seconds < thresholds.s && ['s', seconds]  ||
-            minutes <= 1           && ['m']           ||
-            minutes < thresholds.m && ['mm', minutes] ||
-            hours   <= 1           && ['h']           ||
-            hours   < thresholds.h && ['hh', hours]   ||
-            days    <= 1           && ['d']           ||
-            days    < thresholds.d && ['dd', days]    ||
-            months  <= 1           && ['M']           ||
-            months  < thresholds.M && ['MM', months]  ||
-            years   <= 1           && ['y']           || ['yy', years];
+    var a = seconds <= thresholds.ss && ['s', seconds]  ||
+            seconds < thresholds.s   && ['ss', seconds] ||
+            minutes <= 1             && ['m']           ||
+            minutes < thresholds.m   && ['mm', minutes] ||
+            hours   <= 1             && ['h']           ||
+            hours   < thresholds.h   && ['hh', hours]   ||
+            days    <= 1             && ['d']           ||
+            days    < thresholds.d   && ['dd', days]    ||
+            months  <= 1             && ['M']           ||
+            months  < thresholds.M   && ['MM', months]  ||
+            years   <= 1             && ['y']           || ['yy', years];
 
     a[2] = withoutSuffix;
     a[3] = +posNegDuration > 0;
@@ -48246,10 +48458,17 @@ function getSetRelativeTimeThreshold (threshold, limit) {
         return thresholds[threshold];
     }
     thresholds[threshold] = limit;
+    if (threshold === 's') {
+        thresholds.ss = limit - 1;
+    }
     return true;
 }
 
 function humanize (withSuffix) {
+    if (!this.isValid()) {
+        return this.localeData().invalidDate();
+    }
+
     var locale = this.localeData();
     var output = relativeTime$1(this, !withSuffix, locale);
 
@@ -48270,6 +48489,10 @@ function toISOString$1() {
     // This is because there is no context-free conversion between hours and days
     // (think of clock changes)
     // and also not between days and months (28-31 days per month)
+    if (!this.isValid()) {
+        return this.localeData().invalidDate();
+    }
+
     var seconds = abs$1(this._milliseconds) / 1000;
     var days         = abs$1(this._days);
     var months       = abs$1(this._months);
@@ -48314,6 +48537,7 @@ function toISOString$1() {
 
 var proto$2 = Duration.prototype;
 
+proto$2.isValid        = isValid$1;
 proto$2.abs            = abs;
 proto$2.add            = add$1;
 proto$2.subtract       = subtract$1;
@@ -48369,7 +48593,7 @@ addParseToken('x', function (input, array, config) {
 // Side effect imports
 
 
-hooks.version = '2.17.1';
+hooks.version = '2.18.0';
 
 setHookCallback(createLocal);
 
@@ -49526,7 +49750,7 @@ Manager.prototype.onreconnect = function () {
   this.emitAll('reconnect', attempt);
 };
 
-},{"./on":67,"./socket":68,"backo2":32,"component-bind":36,"component-emitter":70,"debug":71,"engine.io-client":39,"indexof":57,"socket.io-parser":74}],67:[function(require,module,exports){
+},{"./on":67,"./socket":68,"backo2":32,"component-bind":36,"component-emitter":70,"debug":71,"engine.io-client":39,"indexof":56,"socket.io-parser":74}],67:[function(require,module,exports){
 
 /**
  * Module exports.
@@ -49973,7 +50197,7 @@ Socket.prototype.compress = function (compress) {
   return this;
 };
 
-},{"./on":67,"component-bind":36,"component-emitter":70,"debug":71,"has-binary":54,"socket.io-parser":74,"to-array":80}],69:[function(require,module,exports){
+},{"./on":67,"component-bind":36,"component-emitter":70,"debug":71,"has-binary":54,"socket.io-parser":74,"to-array":79}],69:[function(require,module,exports){
 (function (global){
 
 /**
@@ -50203,7 +50427,7 @@ exports.removeBlobs = function(data, callback) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./is-buffer":75,"isarray":78}],74:[function(require,module,exports){
+},{"./is-buffer":75,"isarray":57}],74:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -50995,9 +51219,7 @@ function coerce(val) {
   return val;
 }
 
-},{"ms":79}],78:[function(require,module,exports){
-arguments[4][55][0].apply(exports,arguments)
-},{"dup":55}],79:[function(require,module,exports){
+},{"ms":78}],78:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -51124,7 +51346,7 @@ function plural(ms, n, name) {
   return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
-},{}],80:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 module.exports = toArray
 
 function toArray(list, index) {
@@ -51139,7 +51361,7 @@ function toArray(list, index) {
     return array
 }
 
-},{}],81:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 (function (global){
 
 var rng;
@@ -51175,7 +51397,7 @@ module.exports = rng;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],82:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 //     uuid.js
 //
 //     Copyright (c) 2010-2012 Robert Kieffer
@@ -51360,7 +51582,7 @@ uuid.unparse = unparse;
 
 module.exports = uuid;
 
-},{"./rng":81}],83:[function(require,module,exports){
+},{"./rng":80}],82:[function(require,module,exports){
 (function (global){
 /*! https://mths.be/wtf8 v1.0.0 by @mathias */
 ;(function(root) {
@@ -51598,7 +51820,7 @@ module.exports = uuid;
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],84:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 'use strict';
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')
@@ -51669,3 +51891,5 @@ yeast.decode = decode;
 module.exports = yeast;
 
 },{}]},{},[22]);
+
+//# sourceMappingURL=bundle.js.map

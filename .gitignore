@@ -6,3 +6,7 @@
 **/node_modules
 **/npm-debug.log
 **/dump.rdb
+
+# MAP FILES
+**/*.css.map
+**/*.js.map

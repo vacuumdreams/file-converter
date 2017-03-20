@@ -8,7 +8,8 @@
   },
   "scripts": {
     "lint": "./node_modules/.bin/eslint --config .eslintrc ./**/*.js --fix",
-    "test": "test"
+    "start": "export NODE_ENV=production && ./node_modules/.bin/gulp",
+    "start:dev": "export NODE_ENV=development && ./node_modules/.bin/gulp"
   },
   "keywords": [
     "node",
@@ -35,14 +36,22 @@
   "devDependencies": {
     "autoprefixer": "^6.7.7",
     "babel-eslint": "^7.1.1",
+    "babel-preset-es2015": "^6.24.0",
+    "babelify": "^7.3.0",
+    "browser-sync": "^2.18.8",
     "browserify": "^14.1.0",
     "cssnano": "^3.10.0",
     "eslint": "^3.17.1",
     "eslint-plugin-babel": "^4.1.1",
+    "gulp-ngmin": "^0.3.0",
     "gulp-postcss": "^6.3.0",
+    "gulp-rename": "^1.2.2",
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.4.1",
+    "gulp-uglify": "^2.1.0",
     "nodemon": "^1.11.0",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.9.0"
   }
 }

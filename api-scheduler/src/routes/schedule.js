@@ -35,7 +35,6 @@ module.exports = (config, io, queue) => ({
       .then(result => {
         io.to(client).emit(`start-${id}`)
         result.body.on('end', () => {
-          console.log('END! ' + id)
           io.to(client).emit(`complete-${id}`)
         })
         result.body.on('error', error => io.to(client).emit(`error-${id}`, {
@@ -45,7 +44,6 @@ module.exports = (config, io, queue) => ({
         
         if (progress) {
           result.body.on('data', data => {
-            console.log(data.toString())
             io.to(client).emit(`progress-${id}`, data.toString())
           })
         }
