@@ -27,7 +27,6 @@ class Queue extends EventEmmitter {
       const item = self._queue.shift()
       self._processing[id] = item().then(res => {
         res.on('end', () => {
-          console.log(self._processing)
           delete self._processing[id]
           self.emit('process')
         })
