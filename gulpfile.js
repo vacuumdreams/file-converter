@@ -10,7 +10,7 @@ const watchify = require('watchify')
 const babelify = require('babelify')
 const source = require('vinyl-source-stream')
 const buffer = require('vinyl-buffer')
-// const ngmin = require('gulp-ngmin')
+// const ngAnnotate = require('gulp-ng-annotate')
 // const uglify = require('gulp-uglify')
 
 const nano = require('cssnano')
@@ -40,6 +40,8 @@ const b = browserify({
 
 const bundle = () => b.bundle()
 
+if (ENV === 'development') b.on('update', bundle)
+
 gulp.task('presentation', () => 
   gulp.src('./app-ui/src/**/presentation/*/*.html')
   .pipe(rename(path => {
@@ -60,7 +62,7 @@ gulp.task('bundle', ['containers', 'presentation'], () =>
   bundle()
   .pipe(source('bundle.js'))
   .pipe(buffer())
-  // .pipe(ngmin({dynamic: true}))
+  // .pipe(ngAnnotate())
   // .pipe(uglify({ options: { mangle: false }}))
   .pipe(gulp.dest('app-ui/dist'))
 )
@@ -69,7 +71,7 @@ gulp.task('bundle:dev', ['containers', 'presentation'], () =>
   bundle()
   .pipe(source('bundle.js'))
   .pipe(buffer())
-  // .pipe(ngmin({dynamic: true}))
+  // .pipe(ngAnnotate())
   // .pipe(uglify({ options: { mangle: false }}))
   .pipe(sourcemaps.init({loadMaps: true}))
   .pipe(sourcemaps.write('./'))
@@ -103,7 +105,6 @@ gulp.task('styles:dev', () => {
 gulp.task('watch', () => {
   if (ENV === 'development') {
     gulp.watch('./app-ui/src/scss/**/*.scss', ['styles', 'refresh'])
-    b.on('update', bundle)
   }
 })
 
@@ -121,7 +122,7 @@ gulp.task('servers', () => {
   })
 })
 
-gulp.task('sync', ['watch'], () => 
+gulp.task('sync', ['styles', 'bundle:dev'], () => 
   browserSync({
     files: ['./app-ui/dist/styles.css', './app-ui/dist/bundle.js'],
     proxy: {
@@ -131,7 +132,7 @@ gulp.task('sync', ['watch'], () =>
   })
 )
 
-gulp.task('refresh', ['bundle:dev'], browserSync.reload)
+gulp.task('refresh', ['watch', 'bundle:dev'], browserSync.reload)
 
 const TASKS = {
   'development': ['styles:dev', 'bundle:dev', 'watch', 'servers', 'sync', 'refresh'],

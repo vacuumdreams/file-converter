@@ -496,7 +496,13 @@ module.exports = function (_ref) {
     angular.module(container.name, []);
     addFactories(container.name, container.actions);
     addDirectives(container.name, container.presentation);
+
+    // const injects = container.state.toString().match(/\((.*)\)/).splice(1)
     angular.module(container.name).controller(container.state.name, container.state);
+    // angular.module(container.name).controller(container.state.name, [
+    //   ...injects,
+    //   container.state.bind(this),
+    // ])
   });
 };
 
