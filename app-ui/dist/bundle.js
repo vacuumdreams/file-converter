@@ -51897,5 +51897,3 @@ yeast.decode = decode;
 module.exports = yeast;
 
 },{}]},{},[22]);
-
-//# sourceMappingURL=bundle.js.map

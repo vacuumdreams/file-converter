@@ -21,7 +21,6 @@ class Queue extends EventEmmitter {
 
   _process() {
     const self = this
-    console.log(self._processing)
     if (self._queue.length > 0 && Object.keys(self._processing).length < self.MAX) {
       const id = uuid.v4()
       const item = self._queue.shift()

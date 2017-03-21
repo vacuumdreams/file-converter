@@ -37,3 +37,4 @@ All services can be started with one of the cli commands below:
 - fix reloading when changing the js bundle
 - add automated tests
 - use css-modules
+- add rotation to notifications
