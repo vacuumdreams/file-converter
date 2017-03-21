@@ -5,11 +5,11 @@ The back-end and front-end code has been implemented in a config based architect
 
 #### Libs
 
-Responsible for potencially assembling the apis and apps based on the exported code from their location.
+Responsible for assembling the apis and apps based on the exported code from their location, in a reusable way. They act as adaptors between frameworks and code.
 
 #### Converter
 
-Responsible for converting files. Currently it has only mocks for processing hmtl and pdf conversion. The mocks are stream-based, handled by the fileprocess service, which uses a timeout provided in the config, and emits process events on every processed percentage (calculated from the total timeout). 
+Responsible for converting files. Currently it has only mocks for processing hmtl and pdf conversions (it assumes that the transforms are processed as streams). The mocks are stream-based, handled by the fileprocess service, which uses a timeout provided in the config, and emits process events on every processed percentage (calculated from the total timeout). 
 
 #### Scheduler
 
@@ -18,18 +18,22 @@ Responsible for scheduling process requests as a queue. It uses a queue service 
 #### UI
 
 Responseible for providing a client, which provides access to trigger requests to queue conversion processes, and provides progress and status notifications.
-The architecture has been influenced heavily by uni-directional data flow patterns and smart and dumb ui component paradigms.
+The architecture has been influenced heavily by unidirectional data flow patterns and the smart vs dumb ui component paradigm. 
+The styling is made in sass, just by generating a standard stylesheet. The structure is influenced mostly by the BEM pattern, only without the fussyness of the double separators. Components are standalone, using arbitrarily defined variables, which can (and usually do) inherit from cores. Every folder has a _base.scss file which is responsible for defining the load order.
 
 ### Usage
 
 All services can be started with one of the cli commands below:
 
-`npm run start`: only runs the builds and starts the services
+`npm install`: install prequisite dependencies
+
+`npm run start`: only runs the builds and starts the services, default address is http://localhost:7000
 
 `npm run start:dev`: adds sourcemaps to compiles, and it uses browser-sync
 
 ### Todos
 
 - add uglify to js
-- fix reloading when re-compiling the js bundle
+- fix reloading when changing the js bundle
 - add automated tests
+- use css-modules
