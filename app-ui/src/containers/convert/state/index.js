@@ -24,7 +24,8 @@ const getItem = (vm, scope, type) => ({
   update: obj => merge(vm[type], obj),
 })
 
-module.exports = function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
+function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
+  'ngInject'
   const vm = this
 
   ServiceScheduleIO.on('id', id => {
@@ -135,3 +136,6 @@ module.exports = function ControllerConvert($scope, ServiceSchedule, ServiceSche
     },
   }
 }
+
+ControllerConvert.fnname = 'ControllerConvert'
+module.exports = ControllerConvert

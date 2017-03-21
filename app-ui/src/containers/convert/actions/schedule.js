@@ -1,6 +1,7 @@
 const { EVENTS } = require('../constants') 
 
-module.exports = function ServiceSchedule($http) { 
+function ServiceSchedule($http) { 
+  'ngInject'
   return ({
     send: (scope, pkg) => $http.post('http://localhost:8020/schedule', pkg)
       .then(res => {
@@ -8,3 +9,6 @@ module.exports = function ServiceSchedule($http) {
       }),
   })
 }
+
+ServiceSchedule.fnname = 'ServiceSchedule'
+module.exports = ServiceSchedule
