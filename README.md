@@ -34,7 +34,7 @@ All services can be started with one of the cli commands below:
 ### Todos
 
 - ~~add uglify to js~~
-- fix reloading when changing the js bundle
+- ~~fix reloading when changing the js bundle~~
 - add automated tests
 - use css-modules
 - add rotation to notifications
