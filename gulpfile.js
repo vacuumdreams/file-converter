@@ -1,6 +1,7 @@
 const gulp = require('gulp')
 const rename = require('gulp-rename')
 const {spawn} = require('child_process')
+const Promise = require('bluebird')
 
 const browserSync = require('browser-sync')
 
@@ -22,6 +23,9 @@ const sourcemaps = require('gulp-sourcemaps')
 
 const ENV = process.env.NODE_ENV || 'development'
 
+const js = ENV === 'development' ? 'bundle:dev' : 'bundle'
+const styles = ENV === 'development' ? 'styles:dev' : 'styles'
+
 const bPlugins = {
   'development': [watchify],
   'production': [],
@@ -40,8 +44,6 @@ const b = browserify({
 
 const bundle = () => b.bundle()
 
-if (ENV === 'development') b.on('update', bundle)
-
 gulp.task('presentation', () => 
   gulp.src('./app-ui/src/**/presentation/*/*.html')
   .pipe(rename(path => {
@@ -58,7 +60,7 @@ gulp.task('containers', () =>
   .pipe(gulp.dest('app-ui/dist/containers'))
 )
 
-gulp.task('bundle', ['containers', 'presentation'], () => 
+gulp.task('bundle', () => 
   bundle()
   .pipe(source('bundle.js'))
   .pipe(buffer())
@@ -67,7 +69,7 @@ gulp.task('bundle', ['containers', 'presentation'], () =>
   .pipe(gulp.dest('app-ui/dist'))
 )
 
-gulp.task('bundle:dev', ['containers', 'presentation'], () => 
+gulp.task('bundle:dev', () => 
   bundle()
   .pipe(source('bundle.js'))
   .pipe(buffer())
@@ -102,27 +104,37 @@ gulp.task('styles:dev', () => {
   .pipe(gulp.dest('app-ui/dist'))
 })
 
+const registry = {}
+
+const startService = (cmd, module, args = []) => new Promise(resolve => {
+  console.log(args.concat(['index.js']))
+  if (registry[module] && registry[module].kill) registry[module].kill()
+  registry[module] = spawn(cmd, ['index.js'].concat(args), {
+    cwd: `./${module}`,
+  }).stdout.on('data', msg => {
+    const message = msg.toString()
+    console.log(message.trim())
+    if (message.indexOf('started and listening') > -1) resolve()
+  })    
+})
+
+gulp.task('api:converter', () => startService('nodemon', 'api-converter'))
+
+gulp.task('api:scheduler', () => startService('nodemon', 'api-scheduler'))
+
+gulp.task('server:ui', ['containers', 'presentation', styles, js], () => startService('node', 'app-ui', [
+  '--ignore ./src/',
+  '--ignore ./dist/',
+]))
+
 gulp.task('watch', () => {
-  if (ENV === 'development') {
-    gulp.watch('./app-ui/src/scss/**/*.scss', ['styles', 'refresh'])
-  }
+  gulp.watch('./app-ui/src/scss/**/*.scss', [styles])
+  gulp.watch('./app-ui/src/containers/*/*.html', ['containers'])
+  gulp.watch('./app-ui/src/**/presentation/*/*.html', ['presentation'])
+  gulp.watch('./app-ui/src/**/*.js', [js])
 })
 
-gulp.task('servers', () => {
-  const command = ENV === 'development' ? './node_modules/.bin/nodemon' : 'node'
-
-  spawn(command, ['./api-converter/index.js'], {
-    stdio: 'inherit',
-  })
-  spawn(command, ['./api-scheduler/index.js'], {
-    stdio: 'inherit',
-  })
-  spawn(command, ['./app-ui/index.js'], {
-    stdio: 'inherit',
-  })
-})
-
-gulp.task('sync', ['styles', 'bundle:dev'], () => 
+gulp.task('sync', ['server:ui'], () => 
   browserSync({
     files: ['./app-ui/dist/styles.css', './app-ui/dist/bundle.js'],
     proxy: {
@@ -132,11 +144,11 @@ gulp.task('sync', ['styles', 'bundle:dev'], () =>
   })
 )
 
-gulp.task('refresh', ['watch', 'bundle:dev'], browserSync.reload)
+gulp.task('servers', ['api:converter', 'api:scheduler', 'server:ui'])
 
 const TASKS = {
-  'development': ['styles:dev', 'bundle:dev', 'watch', 'servers', 'sync', 'refresh'],
-  'production': ['styles', 'bundle', 'servers'],
+  'development': ['bundle:dev', 'styles:dev', 'servers', 'watch', 'sync'],
+  'production': ['bundle', 'styles', 'servers'],
 }
 
 gulp.task('default', TASKS[ENV])
