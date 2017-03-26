@@ -1,5 +1,5 @@
 <ul class="notification-list">
-  <li class="notification" ng-repeat="notification in list">
+  <li class="notification {{notification.class}}" ng-repeat="notification in list">
     <icon name="#{{notification.icon}}" class="notification-icon" icon-class="icon-{{notification.icon}}"></icon>
     <p class="notification-message">{{notification.message}}</p>
   </li>

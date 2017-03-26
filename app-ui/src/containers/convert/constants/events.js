@@ -14,4 +14,7 @@ module.exports = {
     COMPLETE: 'convert:complete',
     ERROR: 'convert:error',
   },
+  NOTIFICATION: {
+    REMOVE: 'notification:remove',
+  },
 }

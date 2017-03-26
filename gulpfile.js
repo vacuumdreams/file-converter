@@ -61,7 +61,7 @@ gulp.task('containers', () =>
 )
 
 gulp.task('bundle', () => 
-  bundle()
+  bundle().on('error', (err) => console.log(err))
   .pipe(source('bundle.js'))
   .pipe(buffer())
   .pipe(ngAnnotate())
@@ -107,7 +107,6 @@ gulp.task('styles:dev', () => {
 const registry = {}
 
 const startService = (cmd, module, args = []) => new Promise(resolve => {
-  console.log(args.concat(['index.js']))
   if (registry[module] && registry[module].kill) registry[module].kill()
   registry[module] = spawn(cmd, ['index.js'].concat(args), {
     cwd: `./${module}`,
@@ -136,7 +135,7 @@ gulp.task('watch', () => {
 
 gulp.task('sync', ['server:ui'], () => 
   browserSync({
-    files: ['./app-ui/dist/styles.css', './app-ui/dist/bundle.js'],
+    files: ['./app-ui/dist/*'],
     proxy: {
       target: require('./app-ui/config').server.url,
       ws: true,

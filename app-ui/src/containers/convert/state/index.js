@@ -18,7 +18,7 @@ const getItem = (vm, scope, type) => ({
   text: `New ${type.toUpperCase()} Conversion`,
   disabled: true,
   add: () => {
-    if (vm.pdf.disabled === true) return
+    if (vm[type].disabled === true) return
     scope.$broadcast(EVENTS.CONVERT.NEW, merge({ id: uuid.v4() }, vm[type].package))
   },
   update: obj => merge(vm[type], obj),
@@ -45,7 +45,7 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
   })
 
   $scope.$on(EVENTS.SCHEDULE.SEND.SUCCESS, (e, res) => {
-    vm.list.items.push({
+    vm.list.items = [...vm.list.items, {
       id: res.id,
       title: `${res.type} #${vm.list.items.filter(item => item.type === res.type).length + 1}`,
       time: {
@@ -58,13 +58,14 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
         value: 0,
         max: 100,
       },
-    })
+    }]
   })
 
   $scope.$on(EVENTS.CONVERT.START, (e, {item}) => {
     item.status = STATUS.STARTED
     vm.notifications.add({
       id: item.id,
+      status: item.status,
       message: `Request '${item.title}' started processing`,
       icon: NOTIFICATION.STARTED.icon,
     })
@@ -80,6 +81,7 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
     item.status = STATUS.COMPLETE
     vm.notifications.add({
       id: item.id,
+      status: item.status,
       message: `Request '${item.title}' processed`,
       icon: NOTIFICATION.COMPLETE.icon,
     })
@@ -90,6 +92,7 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
     item.status = STATUS.ERROR
     vm.notifications.add({
       id: item.id,
+      status: item.status,
       message: `Request '${item.title}' failed`,
       icon: NOTIFICATION.ERROR.icon,
     })
@@ -114,6 +117,17 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
     })
   })
 
+  $scope.$on(EVENTS.NOTIFICATION.REMOVE, (e, {id}) => {
+    setTimeout(() => {
+      vm.notifications.prepare(id, ['removing'])
+      $scope.$digest()
+    }, 200)
+    setTimeout(() => {
+      vm.notifications.remove(id)
+      $scope.$digest()
+    }, 10000)
+  })
+
   vm.title = 'Conversions'
 
   vm.list = {
@@ -130,9 +144,22 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
   vm.pdf = getItem(vm, $scope, 'pdf')
 
   vm.notifications = {
+    class: '',
     list: [],
     add: item => {
-      vm.notifications.list.push(item)
+      vm.notifications.class = 'notification-adding'
+      vm.notifications.list = [item, ...vm.notifications.list]
+      if (item.status === STATUS.COMPLETE || item.status === STATUS.ERROR) {
+        $scope.$broadcast(EVENTS.NOTIFICATION.REMOVE, item)
+      }
+    },
+    prepare: (id, classes) => {
+      vm.notifications.list = vm.notifications.list.map(notification => {
+        return notification.id !== id ? notification : merge(notification, { class: classes.map(c => `notification-${c}`).join(' ') })
+      })
+    },
+    remove: id => {
+      vm.notifications.list = vm.notifications.list.filter(notification => id !== notification.id)
     },
   }
 }
