@@ -1,15 +1,15 @@
 <ul class="item-header-list">
-  <li class="item-header" ng-repeat="header in list.header">
+  <li class="item-header" ng-repeat="header in headers">
     <span class="item-header-value">{{header}}</span>
   </li>
 </ul>
 
 <ul class="item-list">
-  <li class="item" ng-repeat="item in list.items">
-    <h3 class="item-field item-title" data-field="{{list.header[0]}}: ">{{item.title}}</h3>
-    <time class="item-field item-creation" data-field="{{list.header[1]}}: " datetime="{{item.time.raw}}">{{item.time.display}}</time>
-    <span class="item-field item-type" data-field="{{list.header[2]}}: "><mark class="mark">{{item.type}}</mark></span>
-    <span class="item-field item-status" data-field="{{list.header[3]}}: ">
+  <li class="item" ng-repeat="item in list">
+    <h3 class="item-field item-title" data-field="{{headers[0]}}: ">{{item.title}}</h3>
+    <time class="item-field item-creation" data-field="{{headers[1]}}: " datetime="{{item.time.raw}}">{{item.time.display}}</time>
+    <span class="item-field item-type" data-field="{{headers[2]}}: "><mark class="mark">{{item.type}}</mark></span>
+    <span class="item-field item-status" data-field="{{headers[3]}}: ">
       <icon name="#{{item.status.icon}}" class="item-status-icon" icon-class="icon-{{item.status.icon + (item.status.text === 'Processing' ?  ' icon-rotate' : '')}}"></icon>
       {{item.status.text}}
     </span>

@@ -4,7 +4,7 @@ const { merge } = require('angular')
 
 const { EVENTS, STATUS, NOTIFICATION } = require('../constants')
 
-const getItem = (vm, scope, type) => ({
+const getConverter = ({vm, scope, type}) => ({
   package: {
     client: undefined,
     service: 'converter',
@@ -21,7 +21,6 @@ const getItem = (vm, scope, type) => ({
     if (vm[type].disabled === true) return
     scope.$broadcast(EVENTS.CONVERT.NEW, merge({ id: uuid.v4() }, vm[type].package))
   },
-  update: obj => merge(vm[type], obj),
 })
 
 function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
@@ -29,30 +28,30 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
   const vm = this
 
   ServiceScheduleIO.on('id', id => {
-    $scope.$broadcast(EVENTS.IO.CONNECT, id)
+    $scope.$broadcast(EVENTS.IO.CONNECT, {id})
   })
 
-  $scope.$on(EVENTS.IO.CONNECT, (e, id) => {
+  $scope.$on(EVENTS.IO.CONNECT, (e, {id}) => {
     const override = {
       disabled: false,
       package: {
         client: id,
       },
     }
-    vm.html.update(override)
-    vm.pdf.update(override)
+    vm.html = merge({}, vm.html, override)
+    vm.pdf = merge({}, vm.pdf, override)
     $scope.$digest()
   })
 
-  $scope.$on(EVENTS.SCHEDULE.SEND.SUCCESS, (e, res) => {
-    vm.list.items = [...vm.list.items, {
-      id: res.id,
-      title: `${res.type} #${vm.list.items.filter(item => item.type === res.type).length + 1}`,
+  $scope.$on(EVENTS.SCHEDULE.SEND.SUCCESS, (e, {id, type, started}) => {
+    vm.items.list = [...vm.items.list, {
+      id: id,
+      title: `${type} #${vm.items.list.filter(item => item.type === type).length + 1}`,
       time: {
-        raw: res.started,
-        display: moment(res.started).format('ddd, MMM D, h:mma'),
+        raw: started,
+        display: moment(started).format('ddd, MMM D, h:mma'),
       },
-      type: res.type,
+      type: type,
       status: STATUS.QUEUED,
       progress: {
         value: 0,
@@ -88,7 +87,7 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
     $scope.$digest()
   })
 
-  $scope.$on(EVENTS.CONVERT.ERROR, (e, item) => {
+  $scope.$on(EVENTS.CONVERT.ERROR, (e, {item}) => {
     item.status = STATUS.ERROR
     vm.notifications.add({
       id: item.id,
@@ -103,7 +102,7 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
     let item
     ServiceSchedule.send($scope, pkg)
     ServiceScheduleIO.on(`start-${pkg.id}`, () => {
-      item = vm.list.items.find(item => item.id === pkg.id)
+      item = vm.items.list.find(item => item.id === pkg.id)
       $scope.$broadcast(EVENTS.CONVERT.START, {item}) 
     })
     ServiceScheduleIO.on(`progress-${pkg.id}`, percentage => {
@@ -113,53 +112,44 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
       $scope.$broadcast(EVENTS.CONVERT.COMPLETE, {item}) 
     })
     ServiceScheduleIO.on(`error-${pkg.id}`, () => {
-      $scope.$broadcast(EVENTS.CONVERT.COMPLETE, {item}) 
+      $scope.$broadcast(EVENTS.CONVERT.ERROR, {item}) 
     })
   })
 
   $scope.$on(EVENTS.NOTIFICATION.REMOVE, (e, {id}) => {
-    setTimeout(() => {
-      vm.notifications.prepare(id, ['removing'])
-      $scope.$digest()
-    }, 200)
-    setTimeout(() => {
-      vm.notifications.remove(id)
-      $scope.$digest()
-    }, 10000)
+    vm.notifications.remove(id)
+    $scope.$digest()
   })
 
   vm.title = 'Conversions'
 
-  vm.list = {
-    header: [
+  vm.items = {
+    list: [],
+    headers: [
       'Name',
       'Created at',
       'Type',
       'Status',
     ],
-    items: [],
   }
 
-  vm.html = getItem(vm, $scope, 'html')
-  vm.pdf = getItem(vm, $scope, 'pdf')
+  vm.html = getConverter({vm, scope: $scope, type: 'html'})
+  vm.pdf = getConverter({vm, scope: $scope, type: 'pdf'})
 
   vm.notifications = {
-    class: '',
     list: [],
     add: item => {
-      vm.notifications.class = 'notification-adding'
       vm.notifications.list = [item, ...vm.notifications.list]
+      $scope.$broadcast(EVENTS.NOTIFICATION.ADD, item)
       if (item.status === STATUS.COMPLETE || item.status === STATUS.ERROR) {
-        $scope.$broadcast(EVENTS.NOTIFICATION.REMOVE, item)
+        setTimeout(() => {
+          vm.notifivations.remove(item)
+        }, 5000)
       }
     },
-    prepare: (id, classes) => {
-      vm.notifications.list = vm.notifications.list.map(notification => {
-        return notification.id !== id ? notification : merge(notification, { class: classes.map(c => `notification-${c}`).join(' ') })
-      })
-    },
-    remove: id => {
-      vm.notifications.list = vm.notifications.list.filter(notification => id !== notification.id)
+    remove: item => {
+      vm.notifications.list = vm.notifications.list.filter(notification => item.id !== notification.id)
+      $scope.$broadcast(EVENTS.NOTIFICATION.REMOVE, item)
     },
   }
 }

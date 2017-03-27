@@ -2,6 +2,7 @@ module.exports = {
   SCHEDULE: {
     SEND: {
       SUCCESS: 'schedule:send:success',
+      ERROR: 'schedule:send:error',
     },
   },
   IO: {
@@ -15,6 +16,7 @@ module.exports = {
     ERROR: 'convert:error',
   },
   NOTIFICATION: {
+    ADD: 'notification:add',
     REMOVE: 'notification:remove',
   },
 }

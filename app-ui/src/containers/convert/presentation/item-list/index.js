@@ -5,5 +5,8 @@ module.exports = {
     list: {
       type: 'array',
     },
+    headers: {
+      type: 'array',
+    },
   },
 }
