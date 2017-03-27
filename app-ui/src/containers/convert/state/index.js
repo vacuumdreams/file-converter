@@ -5,7 +5,7 @@ const { merge } = require('angular')
 const { EVENTS, STATUS, NOTIFICATION } = require('../constants')
 
 const getConverter = ({vm, scope, type}) => ({
-  package: {
+  pkg: {
     client: undefined,
     service: 'converter',
     task: `to-${type}`,
@@ -18,8 +18,10 @@ const getConverter = ({vm, scope, type}) => ({
   text: `New ${type.toUpperCase()} Conversion`,
   disabled: true,
   add: () => {
-    if (vm[type].disabled === true) return
-    scope.$broadcast(EVENTS.CONVERT.NEW, merge({ id: uuid.v4() }, vm[type].package))
+    scope.$broadcast(EVENTS.CONVERT.NEW, {
+      pkg: merge({id: uuid.v4()}, vm[type].pkg),
+      disabled: vm[type].disabled,
+    })
   },
 })
 
@@ -34,7 +36,7 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
   $scope.$on(EVENTS.IO.CONNECT, (e, {id}) => {
     const override = {
       disabled: false,
-      package: {
+      pkg: {
         client: id,
       },
     }
@@ -62,7 +64,7 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
 
   $scope.$on(EVENTS.CONVERT.START, (e, {item}) => {
     item.status = STATUS.STARTED
-    vm.notifications.add({
+    $scope.$broadcast(EVENTS.NOTIFICATION.ADD, {
       id: item.id,
       status: item.status,
       message: `Request '${item.title}' started processing`,
@@ -78,7 +80,7 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
 
   $scope.$on(EVENTS.CONVERT.COMPLETE, (e, {item}) => {
     item.status = STATUS.COMPLETE
-    vm.notifications.add({
+    $scope.$broadcast(EVENTS.NOTIFICATION.ADD, {
       id: item.id,
       status: item.status,
       message: `Request '${item.title}' processed`,
@@ -89,7 +91,7 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
 
   $scope.$on(EVENTS.CONVERT.ERROR, (e, {item}) => {
     item.status = STATUS.ERROR
-    vm.notifications.add({
+    $scope.$broadcast(EVENTS.NOTIFICATION.ADD, {
       id: item.id,
       status: item.status,
       message: `Request '${item.title}' failed`,
@@ -98,8 +100,9 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
     $scope.$digest()
   })
 
-  $scope.$on(EVENTS.CONVERT.NEW, (e, pkg) => {
+  $scope.$on(EVENTS.CONVERT.NEW, (e, {pkg, disabled}) => {
     let item
+    if (disabled === true) return
     ServiceSchedule.send($scope, pkg)
     ServiceScheduleIO.on(`start-${pkg.id}`, () => {
       item = vm.items.list.find(item => item.id === pkg.id)
@@ -116,8 +119,18 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
     })
   })
 
-  $scope.$on(EVENTS.NOTIFICATION.REMOVE, (e, {id}) => {
-    vm.notifications.remove(id)
+  $scope.$on(EVENTS.NOTIFICATION.ADD, (e, item) => {
+    vm.notifications.list = [item, ...vm.notifications.list]
+    $scope.$digest()
+    if (item.status === STATUS.COMPLETE || item.status === STATUS.ERROR) {
+      setTimeout(() => {
+        $scope.$broadcast(EVENTS.NOTIFICATION.REMOVE, item)
+      }, 5000)
+    }
+  })
+
+  $scope.$on(EVENTS.NOTIFICATION.REMOVE, (e, item) => {
+    vm.notifications.list = vm.notifications.list.filter(notification => item.id !== notification.id)
     $scope.$digest()
   })
 
@@ -138,19 +151,6 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
 
   vm.notifications = {
     list: [],
-    add: item => {
-      vm.notifications.list = [item, ...vm.notifications.list]
-      $scope.$broadcast(EVENTS.NOTIFICATION.ADD, item)
-      if (item.status === STATUS.COMPLETE || item.status === STATUS.ERROR) {
-        setTimeout(() => {
-          vm.notifivations.remove(item)
-        }, 5000)
-      }
-    },
-    remove: item => {
-      vm.notifications.list = vm.notifications.list.filter(notification => item.id !== notification.id)
-      $scope.$broadcast(EVENTS.NOTIFICATION.REMOVE, item)
-    },
   }
 }
 
