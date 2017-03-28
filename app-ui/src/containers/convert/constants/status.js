@@ -15,4 +15,8 @@ module.exports = {
     icon: 'failure',
     text: 'Failed',
   },
+  ABORTED: {
+    icon: 'failure',
+    text: 'Aborted',
+  },
 }

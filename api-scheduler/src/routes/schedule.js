@@ -33,24 +33,39 @@ module.exports = (config, io, queue) => ({
 
     queue(() => fetch(`${url}/${task}`, { method, body: data })
       .then(result => {
-        io.to(client).emit(`start-${id}`)
-        result.body.on('end', () => {
-          io.to(client).emit(`complete-${id}`)
-        })
-        result.body.on('error', error => io.to(client).emit(`error-${id}`, {
-          error,
-          message: `There was an error processing '${task}'`,
-        }))
-        
-        if (progress) {
+        let aborted = false
+        const socket = io.sockets.connected[client]
+
+        if (client && progress) {
+          socket.emit(`start-${id}`)
+
+          result.body.on('end', () => {
+            if (!aborted) socket.emit(`complete-${id}`)
+            socket.removeAllListeners(`abort-${id}`)
+          })
+
+          result.body.on('error', error => {
+            socket.emit(`error-${id}`, {
+              error,
+              message: `There was an error processing '${task}'`,
+            })
+          })
+          
+          socket.on(`abort-${id}`, () => {
+            aborted = true
+            result.body.end()
+          })
+          
           result.body.on('data', data => {
-            io.to(client).emit(`progress-${id}`, data.toString())
+            socket.emit(`progress-${id}`, data.toString())
           })
         }
+
         return result.body
       })
-      .catch(() => {
-        io.to(client).emit(`error-${id}`, { 
+      .catch(error => {
+        io.to(client).emit(`error-${id}`, {
+          error,
           message: `Unable to connect to service '${service}' on endpoint '${task}'`,
         })
       })

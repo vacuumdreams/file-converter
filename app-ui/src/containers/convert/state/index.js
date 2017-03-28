@@ -19,7 +19,7 @@ const getConverter = ({type}) => ({
   disabled: true,
 })
 
-function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO, localStorageService) {
+function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO, ServiceStorage) {
   'ngInject'
   const vm = this
 
@@ -72,6 +72,21 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO, localStor
     $scope.$digest()
   })
 
+  $scope.$on(EVENTS.CONVERT.ABORT, (e, item) => {
+    item.status = STATUS.ABORTED
+    $scope.$broadcast(EVENTS.CONVERT.UNSUBSCRIBE, {id: item.id})
+    ServiceScheduleIO.emit(`abort-${item.id}`)
+    setTimeout(() => {
+      $scope.$broadcast(EVENTS.NOTIFICATION.ADD, {
+        id: item.id,
+        status: status,
+        message: `Request '${item.title}' aborted`,
+        icon: NOTIFICATION.ERROR.icon,
+      })
+    }, 500)
+    // $scope.$digest()
+  })
+
   $scope.$on(EVENTS.CONVERT.COMPLETE, (e, {item}) => {
     item.status = STATUS.COMPLETE
     $scope.$broadcast(EVENTS.NOTIFICATION.ADD, {
@@ -94,7 +109,14 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO, localStor
     $scope.$digest()
   })
 
-  $scope.$on(EVENTS.CONVERT.ADD, (e, {pkg, disabled}) => {
+  $scope.$on(EVENTS.CONVERT.UNSUBSCRIBE, (e, {id}) => {
+    ServiceScheduleIO.unsubscribe(`start-${id}`)
+    ServiceScheduleIO.unsubscribe(`progress-${id}`)
+    ServiceScheduleIO.unsubscribe(`complete-${id}`)
+    ServiceScheduleIO.unsubscribe(`error-${id}`)
+  })
+
+  $scope.$on(EVENTS.ITEM.ADD, (e, {pkg, disabled}) => {
     let item
     if (disabled === true) return
     ServiceSchedule.send($scope, pkg)
@@ -107,37 +129,39 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO, localStor
     })
     ServiceScheduleIO.on(`complete-${pkg.id}`, () => {
       $scope.$broadcast(EVENTS.CONVERT.COMPLETE, {item})
-      localStorageService.set('items', vm.items.list)
+      ServiceStorage.set('items', vm.items.list)
+      $scope.$broadcast(EVENTS.CONVERT.UNSUBSCRIBE, {id: pkg.id})
     })
     ServiceScheduleIO.on(`error-${pkg.id}`, () => {
       $scope.$broadcast(EVENTS.CONVERT.ERROR, {item}) 
+      $scope.$broadcast(EVENTS.CONVERT.UNSUBSCRIBE, {id: pkg.id})
     })
   })
 
-  $scope.$on(EVENTS.CONVERT.REMOVE, (e, {id}) => {
+  $scope.$on(EVENTS.ITEM.REMOVE, (e, {id}) => {
     vm.items.list = vm.items.list.filter(item => item.id !== id)
-    localStorageService.set('items', vm.items.list)
+    ServiceStorage.set('items', vm.items.list)
   }) 
 
   $scope.$on(EVENTS.NOTIFICATION.ADD, (e, item) => {
     vm.notifications.list = [item, ...vm.notifications.list]
     $scope.$digest()
-    if (item.status === STATUS.COMPLETE || item.status === STATUS.ERROR) {
+    if ([STATUS.COMPLETE, STATUS.ERROR, STATUS.ABORTED].includes(item.status) > -1) {
       setTimeout(() => {
         $scope.$broadcast(EVENTS.NOTIFICATION.REMOVE, item)
       }, 5000)
     }
   })
 
-  $scope.$on(EVENTS.NOTIFICATION.REMOVE, (e, item) => {
-    vm.notifications.list = vm.notifications.list.filter(notification => item.id !== notification.id)
+  $scope.$on(EVENTS.NOTIFICATION.REMOVE, (e, {id}) => {
+    vm.notifications.list = vm.notifications.list.filter(notification => id !== notification.id)
     $scope.$digest()
   })
 
   vm.title = 'Conversions'
 
   vm.items = {
-    list: localStorageService.get('items') || [],
+    list: ServiceStorage.get('items') || [],
     headers: [
       'Name',
       'Created at',
@@ -145,14 +169,16 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO, localStor
       'Status',
     ],
     add: type => {
-      $scope.$broadcast(EVENTS.CONVERT.ADD, {
+      $scope.$broadcast(EVENTS.ITEM.ADD, {
         pkg: merge({id: uuid.v4()}, vm[type].pkg),
         disabled: vm[type].disabled,
       })
     },
+    abort: item => {
+      $scope.$broadcast(EVENTS.CONVERT.ABORT, item)
+    },
     remove: item => {
-      console.log('REMOVE', item)
-      $scope.$broadcast(EVENTS.CONVERT.REMOVE, item)
+      $scope.$broadcast(EVENTS.ITEM.REMOVE, item)
     },
   }
 

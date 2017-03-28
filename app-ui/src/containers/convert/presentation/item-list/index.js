@@ -11,5 +11,8 @@ module.exports = {
     onRemove: {
       type: 'function',
     },
+    onAbort: {
+      type: 'function',
+    },
   },
 }

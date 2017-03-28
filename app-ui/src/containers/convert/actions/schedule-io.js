@@ -5,6 +5,7 @@ function ServiceScheduleIO() {
   return ({
     emit: socket.emit.bind(socket),
     on: socket.on.bind(socket),
+    unsubscribe: socket.removeAllListeners.bind(socket),
   })
 }
 

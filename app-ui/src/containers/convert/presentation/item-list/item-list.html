@@ -13,7 +13,7 @@
       <icon name="#{{item.status.icon}}" class="item-status-icon" icon-class="icon-{{item.status.icon + (item.status.text === 'Processing' ?  ' icon-rotate' : '')}}"></icon>
       {{item.status.text}}
     </span>
-    <button class="button item-remove" ng-click="onRemove()(item)">
+    <button class="button item-remove" ng-click="item.status.text === 'Processing' ? onAbort()(item) : onRemove()(item)">
       <icon class="item-remove-icon" name="#failure" icon-class="icon-failure"></icon>
     </button>
     <progress class="item-progress" value="{{item.progress.value}}" max="{{item.progress.max}}" style="{{item.status.text === 'Processing' ? '' : 'display:none;'}}">
