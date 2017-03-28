@@ -8,5 +8,8 @@ module.exports = {
     headers: {
       type: 'array',
     },
+    onRemove: {
+      type: 'function',
+    },
   },
 }

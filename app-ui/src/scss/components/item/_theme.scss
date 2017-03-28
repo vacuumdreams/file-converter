@@ -110,6 +110,37 @@
       height: 100%;
     }
   }
+
+  &-remove {
+    position: absolute;
+    background-color: transparent;
+    left: 100%;
+    padding-top: 0.75rem;
+    opacity: 0;
+    width: auto;
+    transition: opacity 0.3s;
+
+    &:hover {
+      background-color: transparent!important;
+      box-shadow: none!important;
+    }
+  }
+
+  &:hover &-remove {
+    opacity: 1;
+  }
+}
+
+&.ng-leave {
+  opacity: 1;
+  max-height: 3.2rem;
+  transition: opacity 0.4s, max-height 0.5s 0.4s, padding 0.3s 0.4s;
+}
+
+&.ng-leave-active {
+  opacity: 0;
+  max-height: 0;
+  padding: 0;
 }
 
 &-list {

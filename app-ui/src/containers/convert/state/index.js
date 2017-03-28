@@ -4,7 +4,7 @@ const { merge } = require('angular')
 
 const { EVENTS, STATUS, NOTIFICATION } = require('../constants')
 
-const getConverter = ({vm, scope, type}) => ({
+const getConverter = ({type}) => ({
   pkg: {
     client: undefined,
     service: 'converter',
@@ -17,15 +17,9 @@ const getConverter = ({vm, scope, type}) => ({
   },
   text: `New ${type.toUpperCase()} Conversion`,
   disabled: true,
-  add: () => {
-    scope.$broadcast(EVENTS.CONVERT.NEW, {
-      pkg: merge({id: uuid.v4()}, vm[type].pkg),
-      disabled: vm[type].disabled,
-    })
-  },
 })
 
-function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
+function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO, localStorageService) {
   'ngInject'
   const vm = this
 
@@ -100,7 +94,7 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
     $scope.$digest()
   })
 
-  $scope.$on(EVENTS.CONVERT.NEW, (e, {pkg, disabled}) => {
+  $scope.$on(EVENTS.CONVERT.ADD, (e, {pkg, disabled}) => {
     let item
     if (disabled === true) return
     ServiceSchedule.send($scope, pkg)
@@ -112,12 +106,18 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
       $scope.$broadcast(EVENTS.CONVERT.PROGRESS, {item, value: percentage}) 
     })
     ServiceScheduleIO.on(`complete-${pkg.id}`, () => {
-      $scope.$broadcast(EVENTS.CONVERT.COMPLETE, {item}) 
+      $scope.$broadcast(EVENTS.CONVERT.COMPLETE, {item})
+      localStorageService.set('items', vm.items.list)
     })
     ServiceScheduleIO.on(`error-${pkg.id}`, () => {
       $scope.$broadcast(EVENTS.CONVERT.ERROR, {item}) 
     })
   })
+
+  $scope.$on(EVENTS.CONVERT.REMOVE, (e, {id}) => {
+    vm.items.list = vm.items.list.filter(item => item.id !== id)
+    localStorageService.set('items', vm.items.list)
+  }) 
 
   $scope.$on(EVENTS.NOTIFICATION.ADD, (e, item) => {
     vm.notifications.list = [item, ...vm.notifications.list]
@@ -137,17 +137,27 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO) {
   vm.title = 'Conversions'
 
   vm.items = {
-    list: [],
+    list: localStorageService.get('items') || [],
     headers: [
       'Name',
       'Created at',
       'Type',
       'Status',
     ],
+    add: type => {
+      $scope.$broadcast(EVENTS.CONVERT.ADD, {
+        pkg: merge({id: uuid.v4()}, vm[type].pkg),
+        disabled: vm[type].disabled,
+      })
+    },
+    remove: item => {
+      console.log('REMOVE', item)
+      $scope.$broadcast(EVENTS.CONVERT.REMOVE, item)
+    },
   }
 
-  vm.html = getConverter({vm, scope: $scope, type: 'html'})
-  vm.pdf = getConverter({vm, scope: $scope, type: 'pdf'})
+  vm.html = getConverter({type: 'html'})
+  vm.pdf = getConverter({type: 'pdf'})
 
   vm.notifications = {
     list: [],

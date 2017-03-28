@@ -9,7 +9,8 @@ module.exports = {
     CONNECT: 'io:connect',
   },
   CONVERT: {
-    NEW: 'convert:new',
+    ADD: 'convert:add',
+    REMOVE: 'convert:remove',
     START: 'convert:start',
     PROGRESS: 'convert:progress',
     COMPLETE: 'convert:complete',

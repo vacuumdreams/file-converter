@@ -5,7 +5,7 @@
 </ul>
 
 <ul class="item-list">
-  <li class="item" ng-repeat="item in list">
+  <li class="item" ng-repeat="item in list" ng-animate="item">
     <h3 class="item-field item-title" data-field="{{headers[0]}}: ">{{item.title}}</h3>
     <time class="item-field item-creation" data-field="{{headers[1]}}: " datetime="{{item.time.raw}}">{{item.time.display}}</time>
     <span class="item-field item-type" data-field="{{headers[2]}}: "><mark class="mark">{{item.type}}</mark></span>
@@ -13,6 +13,9 @@
       <icon name="#{{item.status.icon}}" class="item-status-icon" icon-class="icon-{{item.status.icon + (item.status.text === 'Processing' ?  ' icon-rotate' : '')}}"></icon>
       {{item.status.text}}
     </span>
+    <button class="button item-remove" ng-click="onRemove()(item)">
+      <icon class="item-remove-icon" name="#failure" icon-class="icon-failure"></icon>
+    </button>
     <progress class="item-progress" value="{{item.progress.value}}" max="{{item.progress.max}}" style="{{item.status.text === 'Processing' ? '' : 'display:none;'}}">
     </progress>
   </li>

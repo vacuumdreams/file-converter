@@ -4,15 +4,18 @@
     <h1 class="app-title">{{vm.title}}</h1>
 
     <div class="app-controls">
-      <form-button on-submit="vm.html.add()" on-update="vm.html.update()" disabled="vm.html.disabled" text="{{vm.html.text}}">
+      <form-button on-submit="vm.items.add('html')" disabled="vm.html.disabled">
+        {{vm.html.text}}
       </form-button>
-      <form-button on-submit="vm.pdf.add()" on-update="vm.pdf.update()" disabled="vm.pdf.disabled" text="{{vm.pdf.text}}">
+      
+      <form-button on-submit="vm.items.add('pdf')" disabled="vm.pdf.disabled">
+        {{vm.pdf.text}}
       </form-button>
     </div>
 
   </header>
 
-  <item-list class="item-container" headers="vm.items.headers" list="vm.items.list"></item-list>
+  <item-list class="item-container" headers="vm.items.headers" list="vm.items.list" on-remove="vm.items.remove"></item-list>
   <notification-list class="notification-container" list="vm.notifications.list"></notification-list>
 
 </main>
