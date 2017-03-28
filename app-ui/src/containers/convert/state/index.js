@@ -79,12 +79,11 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO, ServiceSt
     setTimeout(() => {
       $scope.$broadcast(EVENTS.NOTIFICATION.ADD, {
         id: item.id,
-        status: status,
+        status: item.status,
         message: `Request '${item.title}' aborted`,
         icon: NOTIFICATION.ERROR.icon,
       })
-    }, 500)
-    // $scope.$digest()
+    }, 200)
   })
 
   $scope.$on(EVENTS.CONVERT.COMPLETE, (e, {item}) => {
@@ -129,7 +128,7 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO, ServiceSt
     })
     ServiceScheduleIO.on(`complete-${pkg.id}`, () => {
       $scope.$broadcast(EVENTS.CONVERT.COMPLETE, {item})
-      ServiceStorage.set('items', vm.items.list)
+      ServiceStorage.set('items', vm.items.list.filter(item => item.status === STATUS.COMPLETE))
       $scope.$broadcast(EVENTS.CONVERT.UNSUBSCRIBE, {id: pkg.id})
     })
     ServiceScheduleIO.on(`error-${pkg.id}`, () => {
@@ -140,13 +139,13 @@ function ControllerConvert($scope, ServiceSchedule, ServiceScheduleIO, ServiceSt
 
   $scope.$on(EVENTS.ITEM.REMOVE, (e, {id}) => {
     vm.items.list = vm.items.list.filter(item => item.id !== id)
-    ServiceStorage.set('items', vm.items.list)
+    ServiceStorage.set('items', vm.items.list.filter(item => item.status === STATUS.COMPLETE))
   }) 
 
   $scope.$on(EVENTS.NOTIFICATION.ADD, (e, item) => {
     vm.notifications.list = [item, ...vm.notifications.list]
     $scope.$digest()
-    if ([STATUS.COMPLETE, STATUS.ERROR, STATUS.ABORTED].includes(item.status) > -1) {
+    if ([STATUS.COMPLETE, STATUS.ERROR, STATUS.ABORTED].includes(item.status)) {
       setTimeout(() => {
         $scope.$broadcast(EVENTS.NOTIFICATION.REMOVE, item)
       }, 5000)
