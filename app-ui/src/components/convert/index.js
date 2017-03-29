@@ -1,11 +1,11 @@
 const actions = require('./actions')
-const presentation = require('./presentation')
 const state = require('./state')
+const views = require('./views')
 
 module.exports = {
   name: 'app.convert',
   template: 'convert.html',
   actions,
-  presentation,
   state,
+  views,
 }

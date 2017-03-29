@@ -1,6 +1,10 @@
 const gulp = require('gulp')
 const rename = require('gulp-rename')
+const clean = require('gulp-clean')
+
 const {spawn} = require('child_process')
+const EventEmmitter = require('events')
+
 const Promise = require('bluebird')
 
 const browserSync = require('browser-sync')
@@ -44,43 +48,75 @@ const b = browserify({
 
 const bundle = () => b.bundle()
 
-gulp.task('presentation', () => 
-  gulp.src('./app-ui/src/**/presentation/*/*.html')
+let isCleaned = false
+const cleanEvents = new EventEmmitter()
+cleanEvents.on('complete', () => {
+  isCleaned = true
+})
+const whenCleaned = (fn) => () => {
+  if (isCleaned) return fn()
+  return new Promise((resolve) => {
+    cleanEvents.on('complete', () => {
+      fn().on('end', resolve)
+    })
+  })
+}
+
+gulp.task('clean', () =>
+  gulp.src([
+    'app-ui/dist/*.*',
+    'app-ui/dist/containers/*',
+    'app-ui/dist/presentation/*',
+  ], {read: false})
+  .pipe(clean())
+  .on('end', () => cleanEvents.emit('complete'))
+)
+
+gulp.task('presentation', whenCleaned(() => 
+  gulp.src('./app-ui/src/**/views/*/*.html')
   .pipe(rename(path => {
     path.dirname = ''
   }))
   .pipe(gulp.dest('app-ui/dist/presentation'))
-)
+))
 
-gulp.task('containers', () => 
-  gulp.src('./app-ui/src/containers/*/*.html')
+gulp.task('containers', whenCleaned(() => 
+  gulp.src('./app-ui/src/components/*/*.html')
   .pipe(rename(path => {
     path.dirname = ''
   }))
   .pipe(gulp.dest('app-ui/dist/containers'))
-)
+))
 
-gulp.task('bundle', () => 
+gulp.task('index', whenCleaned(() => 
+  gulp.src('./app-ui/src/index.html')
+  .pipe(rename(path => {
+    path.dirname = ''
+  }))
+  .pipe(gulp.dest('app-ui/dist'))
+))
+
+gulp.task('bundle', whenCleaned(() => 
+  bundle().on('error', () => console.log('Compiling js failed'))
+  .pipe(source('bundle.js'))
+  .pipe(buffer())
+  .pipe(ngAnnotate())
+  .pipe(uglify({ options: { mangle: false }}))
+  .pipe(gulp.dest('app-ui/dist'))
+))
+
+gulp.task('bundle:dev', whenCleaned(() => 
   bundle().on('error', (err) => console.log(err))
   .pipe(source('bundle.js'))
   .pipe(buffer())
-  .pipe(ngAnnotate())
-  .pipe(uglify({ options: { mangle: false }}))
-  .pipe(gulp.dest('app-ui/dist'))
-)
-
-gulp.task('bundle:dev', () => 
-  bundle()
-  .pipe(source('bundle.js'))
-  .pipe(buffer())
-  .pipe(ngAnnotate())
-  .pipe(uglify({ options: { mangle: false }}))
   .pipe(sourcemaps.init({loadMaps: true}))
+  .pipe(ngAnnotate())
+  .pipe(uglify({ options: { mangle: false }}))
   .pipe(sourcemaps.write('./'))
   .pipe(gulp.dest('app-ui/dist'))
-)
+))
 
-gulp.task('styles', () => {
+gulp.task('styles', whenCleaned(() =>
   gulp.src('./app-ui/src/scss/styles.scss')
   .pipe(sass({
     includePaths: [
@@ -89,9 +125,9 @@ gulp.task('styles', () => {
   }))  
   .pipe(postcss([autoprefixer(), nano()]))
   .pipe(gulp.dest('app-ui/dist'))
-})
+))
 
-gulp.task('styles:dev', () => {
+gulp.task('styles:dev', whenCleaned(() =>
   gulp.src('./app-ui/src/scss/styles.scss')
   .pipe(sourcemaps.init())
   .pipe(sass({
@@ -102,7 +138,7 @@ gulp.task('styles:dev', () => {
   .pipe(postcss([autoprefixer(), nano()]))
   .pipe(sourcemaps.write('.'))
   .pipe(gulp.dest('app-ui/dist'))
-})
+))
 
 const registry = {}
 
@@ -121,21 +157,25 @@ gulp.task('api:converter', () => startService('nodemon', 'api-converter'))
 
 gulp.task('api:scheduler', () => startService('nodemon', 'api-scheduler'))
 
-gulp.task('server:ui', ['containers', 'presentation', styles, js], () => startService('node', 'app-ui', [
-  '--ignore ./src/',
-  '--ignore ./dist/',
-]))
+gulp.task('server:ui', ['index', 'containers', 'presentation', styles, js], () => 
+  startService('node', 'app-ui', [
+    '--ignore ./src/',
+    '--ignore ./dist/',
+  ])
+)
 
-gulp.task('watch', () => {
-  gulp.watch('./app-ui/src/scss/**/*.scss', [styles])
-  gulp.watch('./app-ui/src/containers/*/*.html', ['containers'])
-  gulp.watch('./app-ui/src/**/presentation/*/*.html', ['presentation'])
-  gulp.watch('./app-ui/src/**/*.js', [js])
+gulp.task('watch', ['server:ui'], () => {
+  gulp.watch('./app-ui/src/scss/**/*.scss', [styles]),
+  gulp.watch('./app-ui/src/index.html', ['index']),
+  gulp.watch('./app-ui/src/components/*/*.html', ['containers']),
+  gulp.watch('./app-ui/src/**/views/*/*.html', ['presentation']),
+  gulp.watch('./app-ui/src/**/*.js', [js]),
+  gulp.watch('./lib/app.js', [js])
 })
 
 gulp.task('sync', ['server:ui'], () => 
   browserSync({
-    files: ['./app-ui/dist/*'],
+    files: ['./app-ui/dist/*.*'],
     proxy: {
       target: require('./app-ui/config').server.url,
       ws: true,
@@ -146,8 +186,8 @@ gulp.task('sync', ['server:ui'], () =>
 gulp.task('servers', ['api:converter', 'api:scheduler', 'server:ui'])
 
 const TASKS = {
-  'development': ['bundle:dev', 'styles:dev', 'servers', 'watch', 'sync'],
-  'production': ['bundle', 'styles', 'servers'],
+  'development': ['clean', js, styles, 'servers', 'watch', 'sync'],
+  'production': ['clean', js, styles, 'servers'],
 }
 
 gulp.task('default', TASKS[ENV])

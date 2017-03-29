@@ -1,12 +1,12 @@
 const actions = require('./actions')
-const presentation = require('./presentation')
 const routes = require('./routes')
 const state = require('./state')
+const views = require('./views')
 
 module.exports = {
   name: 'app',
   actions,
-  presentation,
   routes,
   state,
+  views,
 }

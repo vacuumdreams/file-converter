@@ -1,4 +1,4 @@
-const { convert } = require('../../containers')
+const { convert } = require('../../components')
 
 module.exports = {
   '/': convert,

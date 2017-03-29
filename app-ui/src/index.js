@@ -1,6 +1,6 @@
 const app = require('../../lib/app')
 
 const main = require('./app')
-const containers = require('./containers')
+const components = require('./components')
 
-app({ main, containers })
+app({ main, components })
