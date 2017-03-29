@@ -164,7 +164,7 @@ gulp.task('server:ui', ['index', 'containers', 'presentation', styles, js], () =
   ])
 )
 
-gulp.task('watch', ['server:ui'], () => {
+gulp.task('watch', ['servers'], () => {
   gulp.watch('./app-ui/src/scss/**/*.scss', [styles]),
   gulp.watch('./app-ui/src/index.html', ['index']),
   gulp.watch('./app-ui/src/components/*/*.html', ['containers']),
@@ -175,7 +175,7 @@ gulp.task('watch', ['server:ui'], () => {
 
 gulp.task('sync', ['server:ui'], () => 
   browserSync({
-    files: ['./app-ui/dist/*.*'],
+    files: ['./app-ui/dist/*.*', './app-ui/dist/containers/*.*', './app-ui/dist/presentation/*.*'],
     proxy: {
       target: require('./app-ui/config').server.url,
       ws: true,
